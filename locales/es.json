@@ -1,0 +1,95 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "register": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "nav": {
+    "home": "Inicio",
+    "events": "Eventos",
+    "services": "Servicios",
+    "myEvents": "Mis Eventos",
+    "profile": "Perfil"
+  },
+  "auth": {
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signInWithEmail": "Iniciar sesión con Email",
+    "createAccount": "Crear cuenta",
+    "alreadyHaveAccount": "¿Ya tienes cuenta?",
+    "dontHaveAccount": "¿No tienes cuenta?",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "invalidCredentials": "Credenciales inválidas"
+  },
+  "events": {
+    "title": "Eventos",
+    "createEvent": "Crear Evento",
+    "eventType": "Tipo de Evento",
+    "numberOfGuests": "Número de Invitados",
+    "ageRange": "Rango de Edad",
+    "genderDistribution": "Distribución de Género",
+    "budget": "Presupuesto",
+    "preferences": "Preferencias",
+    "eventTypes": {
+      "birthday": "Cumpleaños",
+      "friends": "Junta de Amigos",
+      "corporate": "Evento Empresarial",
+      "wedding": "Matrimonio",
+      "other": "Otro"
+    },
+    "ageRanges": {
+      "children": "Niños (0-12)",
+      "teens": "Adolescentes (13-17)",
+      "adults": "Adultos (18-64)",
+      "seniors": "Adultos Mayores (65+)",
+      "mixed": "Mixto"
+    },
+    "genderOptions": {
+      "mixed": "Mixto",
+      "mostlyMale": "Mayoría Masculino",
+      "mostlyFemale": "Mayoría Femenino",
+      "balanced": "Balanceado"
+    },
+    "planEvent": "Planificar Evento con IA",
+    "estimatedCost": "Costo Estimado",
+    "suggestions": "Sugerencias",
+    "recommendations": "Recomendaciones",
+    "breakdown": "Desglose de Costos"
+  },
+  "services": {
+    "title": "Servicios",
+    "addService": "Agregar Servicio",
+    "serviceName": "Nombre del Servicio",
+    "category": "Categoría",
+    "price": "Precio",
+    "description": "Descripción",
+    "provider": "Proveedor",
+    "categories": {
+      "catering": "Catering",
+      "decoration": "Decoración",
+      "photography": "Fotografía",
+      "music": "Música",
+      "venue": "Lugar",
+      "other": "Otro"
+    }
+  },
+  "ods": {
+    "title": "Objetivos de Desarrollo Sostenible",
+    "description": "Este proyecto está alineado con los ODS 8 y 12 de las Naciones Unidas",
+    "ods8": "ODS 8: Trabajo decente y crecimiento económico",
+    "ods12": "ODS 12: Producción y consumo responsables"
+  }
+}
+

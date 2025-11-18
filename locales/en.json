@@ -1,0 +1,95 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "events": "Events",
+    "services": "Services",
+    "myEvents": "My Events",
+    "profile": "Profile"
+  },
+  "auth": {
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithEmail": "Sign in with Email",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "forgotPassword": "Forgot your password?",
+    "invalidCredentials": "Invalid credentials"
+  },
+  "events": {
+    "title": "Events",
+    "createEvent": "Create Event",
+    "eventType": "Event Type",
+    "numberOfGuests": "Number of Guests",
+    "ageRange": "Age Range",
+    "genderDistribution": "Gender Distribution",
+    "budget": "Budget",
+    "preferences": "Preferences",
+    "eventTypes": {
+      "birthday": "Birthday",
+      "friends": "Friends Gathering",
+      "corporate": "Corporate Event",
+      "wedding": "Wedding",
+      "other": "Other"
+    },
+    "ageRanges": {
+      "children": "Children (0-12)",
+      "teens": "Teens (13-17)",
+      "adults": "Adults (18-64)",
+      "seniors": "Seniors (65+)",
+      "mixed": "Mixed"
+    },
+    "genderOptions": {
+      "mixed": "Mixed",
+      "mostlyMale": "Mostly Male",
+      "mostlyFemale": "Mostly Female",
+      "balanced": "Balanced"
+    },
+    "planEvent": "Plan Event with AI",
+    "estimatedCost": "Estimated Cost",
+    "suggestions": "Suggestions",
+    "recommendations": "Recommendations",
+    "breakdown": "Cost Breakdown"
+  },
+  "services": {
+    "title": "Services",
+    "addService": "Add Service",
+    "serviceName": "Service Name",
+    "category": "Category",
+    "price": "Price",
+    "description": "Description",
+    "provider": "Provider",
+    "categories": {
+      "catering": "Catering",
+      "decoration": "Decoration",
+      "photography": "Photography",
+      "music": "Music",
+      "venue": "Venue",
+      "other": "Other"
+    }
+  },
+  "ods": {
+    "title": "Sustainable Development Goals",
+    "description": "This project is aligned with UN SDGs 8 and 12",
+    "ods8": "SDG 8: Decent work and economic growth",
+    "ods12": "SDG 12: Responsible consumption and production"
+  }
+}
+

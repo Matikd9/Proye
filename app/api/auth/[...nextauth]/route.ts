@@ -6,6 +6,7 @@ import User from '@/models/User';
 import { verifyPassword } from '@/lib/auth';
 
 export const authOptions: NextAuthOptions = {
+  debug:true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
@@ -53,19 +54,23 @@ export const authOptions: NextAuthOptions = {
         const existingUser = await User.findOne({ email: user.email });
 
         if (!existingUser) {
-          await User.create({
+          const newUser = await User.create({
             email: user.email,
             name: user.name || profile?.name || 'User',
             image: user.image || profile?.picture,
             provider: 'google',
             providerId: account.providerAccountId,
           });
+          user.id = newUser._id.toString();
         } else if (existingUser.provider !== 'google') {
           // Update existing user to include Google OAuth
           existingUser.provider = 'google';
           existingUser.providerId = account.providerAccountId;
           existingUser.image = user.image || existingUser.image;
           await existingUser.save();
+          user.id = existingUser._id.toString();
+        } else {
+          user.id = existingUser._id.toString();
         }
       }
 

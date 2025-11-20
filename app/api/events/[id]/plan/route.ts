@@ -35,8 +35,10 @@ export async function POST(
         numberOfGuests: event.numberOfGuests,
         ageRange: event.ageRange,
         genderDistribution: event.genderDistribution,
+        location: event.location,
         budget: event.budget,
         preferences: event.preferences,
+        currency: event.currency,
       },
       language
     );

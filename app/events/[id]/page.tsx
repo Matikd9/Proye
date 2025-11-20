@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
-import { Sparkles, DollarSign, CheckCircle } from 'lucide-react';
+import { Sparkles, DollarSign, CheckCircle, Trash2, Edit2 } from 'lucide-react';
 
 interface Event {
   _id: string;
@@ -13,8 +13,10 @@ interface Event {
   numberOfGuests: number;
   ageRange: string;
   genderDistribution: string;
+  location: string;
   budget?: number;
   preferences?: string;
+  currency?: string;
   estimatedCost?: number;
   aiPlan?: {
     suggestions: string[];
@@ -35,6 +37,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [planning, setPlanning] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -78,6 +81,33 @@ export default function EventDetailPage() {
     }
   };
 
+  const handleEditEvent = () => {
+    if (!params.id) return;
+    router.push(`/events/${params.id}/edit`);
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!params.id) return;
+    if (!window.confirm(t('events.deleteSingleConfirm', locale))) return;
+
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/events/${params.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        router.push('/my-events');
+      } else {
+        alert(t('common.error', locale));
+      }
+    } catch (error) {
+      alert(t('common.error', locale));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>;
   }
@@ -86,11 +116,19 @@ export default function EventDetailPage() {
     return <div className="min-h-screen flex items-center justify-center">Evento no encontrado</div>;
   }
 
+  const hasPlan = Boolean(event.aiPlan && Object.keys(event.aiPlan).length);
+  const currencyCode = event.currency || 'CLP';
+  const currencyFormatter = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: currencyCode,
+    maximumFractionDigits: 0,
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6 md:p-8">
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-start mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {t(`events.eventTypes.${event.eventType}`, locale) || event.eventType}
@@ -99,19 +137,44 @@ export default function EventDetailPage() {
                 {event.numberOfGuests} {t('events.numberOfGuests', locale)}
               </p>
             </div>
-            {!event.aiPlan && (
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handlePlanWithAI}
                 disabled={planning}
-                className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                className={`flex items-center px-4 py-2 rounded-lg text-white disabled:opacity-50 ${
+                  hasPlan ? 'bg-primary-500 hover:bg-primary-600' : 'bg-primary-600 hover:bg-primary-700'
+                }`}
               >
                 <Sparkles className="h-5 w-5 mr-2" />
-                {planning ? t('common.loading', locale) : t('events.planEvent', locale)}
+                {planning
+                  ? t('common.loading', locale)
+                  : hasPlan
+                    ? t('events.regeneratePlan', locale) || 'Regenerar plan con IA'
+                    : t('events.planEvent', locale)}
               </button>
-            )}
+              <button
+                onClick={handleEditEvent}
+                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                <Edit2 className="h-5 w-5 mr-2" />
+                {t('events.editEvent', locale)}
+              </button>
+              <button
+                onClick={handleDeleteEvent}
+                disabled={deleting}
+                className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                <Trash2 className="h-5 w-5 mr-2" />
+                {deleting ? t('common.loading', locale) : t('events.deleteEvent', locale)}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.location', locale)}</h3>
+              <p className="text-lg text-gray-900">{event.location}</p>
+            </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.ageRange', locale)}</h3>
               <p className="text-lg">{t(`events.ageRanges.${event.ageRange}`, locale) || event.ageRange}</p>
@@ -123,13 +186,13 @@ export default function EventDetailPage() {
             {event.budget && (
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.budget', locale)}</h3>
-                <p className="text-lg">${event.budget.toLocaleString()}</p>
+                <p className="text-lg">{currencyFormatter.format(event.budget)}</p>
               </div>
             )}
             {event.estimatedCost && (
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.estimatedCost', locale)}</h3>
-                <p className="text-lg font-semibold text-primary-600">${event.estimatedCost.toLocaleString()}</p>
+                <p className="text-lg font-semibold text-primary-600">{currencyFormatter.format(event.estimatedCost)}</p>
               </div>
             )}
           </div>
@@ -141,7 +204,7 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          {event.aiPlan && (
+          {hasPlan && event.aiPlan && (
             <div className="space-y-6 border-t pt-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
@@ -173,7 +236,7 @@ export default function EventDetailPage() {
                         <div className="flex justify-between items-center mb-2">
                           <h4 className="font-semibold text-gray-900">{category.category}</h4>
                           <span className="text-primary-600 font-medium">
-                            ${category.estimatedCost.toLocaleString()}
+                            {currencyFormatter.format(category.estimatedCost)}
                           </span>
                         </div>
                         <ul className="list-disc list-inside space-y-1 text-gray-700">

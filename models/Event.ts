@@ -6,8 +6,10 @@ export interface IEvent extends Document {
   numberOfGuests: number;
   ageRange: string;
   genderDistribution: string;
+  location: string;
   budget?: number;
   preferences?: string;
+  currency?: string;
   estimatedCost?: number;
   aiPlan?: {
     suggestions: string[];
@@ -46,12 +48,24 @@ const EventSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+      default: 'Santiago, Chile',
+    },
     budget: {
       type: Number,
       min: 0,
     },
     preferences: {
       type: String,
+    },
+    currency: {
+      type: String,
+      default: 'CLP',
+      uppercase: true,
+      trim: true,
     },
     estimatedCost: {
       type: Number,

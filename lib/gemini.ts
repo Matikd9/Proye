@@ -8,13 +8,17 @@ if (!GEMINI_API_KEY) {
 
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
+const MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
 export interface EventPlanningParams {
   eventType: string;
   numberOfGuests: number;
   ageRange: string;
   genderDistribution: string;
+  location: string;
   budget?: number;
   preferences?: string;
+  currency?: string;
 }
 
 export interface EventPlan {
@@ -39,25 +43,44 @@ export async function generateEventPlan(params: EventPlanningParams, language: s
     };
   }
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
-  const prompt = language === 'es' 
-    ? `Eres un asistente experto en planificación de eventos. Genera un plan detallado para un evento con las siguientes características:
-    
+  const currency = params.currency || 'CLP';
+  const location = params.location || 'Chile';
+  const budgetText = params.budget
+    ? new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 0,
+      }).format(params.budget)
+    : language === 'es'
+      ? 'Sin límite específico'
+      : 'No specific limit';
+
+  const prompt = language === 'es'
+    ? `Eres un asistente experto en planificación de eventos. Genera un plan detallado considerando datos reales del mercado chileno y la siguiente información:
+
 Tipo de evento: ${params.eventType}
 Número de invitados: ${params.numberOfGuests}
 Rango de edad: ${params.ageRange}
 Distribución de género: ${params.genderDistribution}
-Presupuesto: ${params.budget ? `$${params.budget}` : 'Sin límite específico'}
-Preferencias: ${params.preferences || 'Ninguna específica'}
+Ubicación del evento: ${location}
+Presupuesto disponible (moneda ${currency}): ${budgetText}
+Preferencias especiales: ${params.preferences || 'Ninguna específica'}
 
-Por favor, proporciona:
+Debes entregar:
 1. Sugerencias de actividades y elementos clave
 2. Costo estimado total
 3. Desglose por categorías (catering, decoración, entretenimiento, etc.) con items específicos y costos
-4. Recomendaciones adicionales
+4. Recomendaciones adicionales con argumentos
 
-Responde en formato JSON con esta estructura:
+Condiciones adicionales:
+- Expresa todos los montos en ${currency}, redondeados al múltiplo de 1.000 más cercano.
+- Basa los precios en proveedores reales disponibles en ${location} (ej.: "Banquetería buffet en Providencia"). Si no hay un dato exacto, entrega un rango y explica la causa.
+- Incluye una breve justificación para cada costo clave (disponibilidad, calidad, temporada, etc.).
+- Menciona cómo cada bloque afecta el presupuesto disponible y advierte si alguna partida consume gran parte del total.
+
+Responde en JSON con esta estructura exacta:
 {
   "suggestions": ["sugerencia1", "sugerencia2"],
   "estimatedCost": 1000,
@@ -70,22 +93,29 @@ Responde en formato JSON con esta estructura:
   ],
   "recommendations": ["recomendación1", "recomendación2"]
 }`
-    : `You are an expert event planning assistant. Generate a detailed plan for an event with the following characteristics:
+    : `You are an expert event planning assistant. Generate a detailed plan based on real market references and the following data:
 
 Event type: ${params.eventType}
 Number of guests: ${params.numberOfGuests}
 Age range: ${params.ageRange}
 Gender distribution: ${params.genderDistribution}
-Budget: ${params.budget ? `$${params.budget}` : 'No specific limit'}
+Event location: ${location}
+Budget (currency ${currency}): ${budgetText}
 Preferences: ${params.preferences || 'None specific'}
 
-Please provide:
+Provide:
 1. Suggestions for key activities and elements
 2. Total estimated cost
-3. Breakdown by categories (catering, decoration, entertainment, etc.) with specific items and costs
-4. Additional recommendations
+3. Breakdown by categories (catering, decoration, entertainment, etc.) with concrete items and costs
+4. Additional recommendations with rationale
 
-Respond in JSON format with this structure:
+Additional rules:
+- Express every amount in ${currency}, rounded to the nearest 1,000.
+- Base prices on real providers in ${location}. State the provider type per item (e.g., "Local catering in Providencia").
+- If only a range is available, share it and justify the variance (seasonality, demand, etc.).
+- Explain how each block impacts the available budget and highlight big-ticket items.
+
+Respond strictly as JSON with this structure:
 {
   "suggestions": ["suggestion1", "suggestion2"],
   "estimatedCost": 1000,

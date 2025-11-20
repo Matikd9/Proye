@@ -36,10 +36,24 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
+    const payload = {
+      ...data,
+      location: typeof data.location === 'string' && data.location.trim().length > 0
+        ? data.location.trim()
+        : 'Santiago, Chile',
+      currency: (data.currency || 'CLP').toString().toUpperCase(),
+      budget:
+        typeof data.budget === 'number'
+          ? data.budget
+          : data.budget
+            ? Number(data.budget)
+            : undefined,
+    };
+
     await connectDB();
 
     const event = await Event.create({
-      ...data,
+      ...payload,
       userId: session.user.id,
     });
 

@@ -1,17 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 
-export default function CreateEventPage() {
+interface EventFormData {
+  eventType: string;
+  numberOfGuests: number;
+  ageRange: string;
+  genderDistribution: string;
+  location: string;
+  budget: string;
+  preferences: string;
+}
+
+export default function EditEventPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const eventId = params?.id;
   const { locale } = useLanguage();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EventFormData>({
     eventType: 'birthday',
     numberOfGuests: 10,
     ageRange: 'adults',
@@ -20,48 +31,87 @@ export default function CreateEventPage() {
     budget: '',
     preferences: '',
   });
+  const [loadingEvent, setLoadingEvent] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  if (status === 'loading') {
-    return <div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>;
-  }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
+    }
 
-  if (status === 'unauthenticated') {
-    router.push('/auth/signin');
-    return null;
-  }
+    if (status === 'authenticated' && eventId) {
+      fetchEvent();
+    }
+  }, [status, eventId, router]);
+
+  const fetchEvent = async () => {
+    try {
+      const response = await fetch(`/api/events/${eventId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFormData({
+          eventType: data.eventType,
+          numberOfGuests: data.numberOfGuests,
+          ageRange: data.ageRange,
+          genderDistribution: data.genderDistribution,
+          location: data.location,
+          budget: data.budget ? data.budget.toString() : '',
+          preferences: data.preferences || '',
+        });
+      } else {
+        router.push('/my-events');
+      }
+    } catch (error) {
+      router.push('/my-events');
+    } finally {
+      setLoadingEvent(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!eventId) return;
 
+    setSaving(true);
     try {
-      const response = await fetch('/api/events', {
-        method: 'POST',
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
           budget: formData.budget ? parseInt(formData.budget, 10) : undefined,
-          currency: 'CLP',
         }),
       });
 
       if (response.ok) {
-        const event = await response.json();
-        router.push(`/events/${event._id}`);
+        router.push(`/events/${eventId}`);
       } else {
         alert(t('common.error', locale));
       }
     } catch (error) {
       alert(t('common.error', locale));
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  if (status === 'loading' || loadingEvent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        {t('common.loading', locale)}
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('events.createEvent', locale)}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('events.editEvent', locale)}</h1>
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -103,7 +153,7 @@ export default function CreateEventPage() {
               type="number"
               min="1"
               value={formData.numberOfGuests}
-              onChange={(e) => setFormData({ ...formData, numberOfGuests: parseInt(e.target.value) })}
+              onChange={(e) => setFormData({ ...formData, numberOfGuests: parseInt(e.target.value, 10) })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             />
@@ -181,10 +231,10 @@ export default function CreateEventPage() {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
             >
-              {loading ? t('common.loading', locale) : t('common.create', locale)}
+              {saving ? t('common.loading', locale) : t('common.save', locale)}
             </button>
           </div>
         </form>
@@ -192,4 +242,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-

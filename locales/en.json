@@ -37,6 +37,8 @@
     "title": "Events",
     "createEvent": "Create Event",
     "editEvent": "Edit Event",
+    "aiPlanTitle": "AI Generated Plan",
+    "notFound": "Event not found",
     "eventType": "Event Type",
     "numberOfGuests": "Number of Guests",
     "ageRange": "Age Range",
@@ -80,6 +82,36 @@
     "recommendations": "Recommendations",
     "breakdown": "Cost Breakdown"
   },
+  "home": {
+    "heroTitle": "Plan Your Perfect Event",
+    "heroSubtitle": "We connect organizers with providers and leverage AI to craft unforgettable experiences",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "Browse Services",
+    "features": {
+      "smartPlanning": {
+        "title": "Smart Planning",
+        "description": "Use AI to obtain personalized suggestions for your event"
+      },
+      "network": {
+        "title": "Provider Network",
+        "description": "Connect with formal and informal services in one place"
+      },
+      "costs": {
+        "title": "Cost Estimation",
+        "description": "Get budget estimates tailored to your parameters"
+      },
+      "ods": {
+        "title": "SDG Aligned",
+        "description": "Support sustainable economic growth and responsible consumption"
+      }
+    },
+    "odsTitle": "Sustainable Development Goals",
+    "odsDescription": "This project is aligned with UN SDGs 8 and 12",
+    "ods8Title": "SDG 8",
+    "ods8Description": "Decent work and economic growth: we promote inclusive growth by supporting small entrepreneurs and local businesses.",
+    "ods12Title": "SDG 12",
+    "ods12Description": "Responsible consumption and production: we encourage responsible consumption by connecting customers directly with local providers."
+  },
   "services": {
     "title": "Services",
     "addService": "Add Service",
@@ -88,6 +120,7 @@
     "price": "Price",
     "description": "Description",
     "provider": "Provider",
+    "emptyState": "No services found",
     "categories": {
       "catering": "Catering",
       "decoration": "Decoration",

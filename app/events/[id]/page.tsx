@@ -113,7 +113,11 @@ export default function EventDetailPage() {
   }
 
   if (!event) {
-    return <div className="min-h-screen flex items-center justify-center">Evento no encontrado</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        {t('events.notFound', locale)}
+      </div>
+    );
   }
 
   const hasPlan = Boolean(event.aiPlan && Object.keys(event.aiPlan).length);
@@ -209,7 +213,7 @@ export default function EventDetailPage() {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                   <Sparkles className="h-6 w-6 mr-2 text-primary-600" />
-                  Plan Generado por IA
+                  {t('events.aiPlanTitle', locale)}
                 </h2>
               </div>
 

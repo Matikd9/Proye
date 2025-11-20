@@ -106,7 +106,7 @@ export default function ServicesPage() {
 
         {filteredServices.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-md">
-            <p className="text-gray-500">No se encontraron servicios</p>
+            <p className="text-gray-500">{t('services.emptyState', locale)}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

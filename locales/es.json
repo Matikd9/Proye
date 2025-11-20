@@ -37,6 +37,8 @@
     "title": "Eventos",
     "createEvent": "Crear Evento",
     "editEvent": "Editar Evento",
+    "aiPlanTitle": "Plan Generado por IA",
+    "notFound": "Evento no encontrado",
     "eventType": "Tipo de Evento",
     "numberOfGuests": "Número de Invitados",
     "ageRange": "Rango de Edad",
@@ -80,6 +82,36 @@
     "recommendations": "Recomendaciones",
     "breakdown": "Desglose de Costos"
   },
+  "home": {
+    "heroTitle": "Planifica tu Evento Perfecto",
+    "heroSubtitle": "Conectamos organizadores con proveedores y utilizamos IA para crear experiencias inolvidables",
+    "ctaPrimary": "Comenzar Ahora",
+    "ctaSecondary": "Ver Servicios",
+    "features": {
+      "smartPlanning": {
+        "title": "Planificación Inteligente",
+        "description": "Utiliza IA para obtener sugerencias personalizadas según tu evento"
+      },
+      "network": {
+        "title": "Red de Proveedores",
+        "description": "Conecta con servicios formales e informales en un solo lugar"
+      },
+      "costs": {
+        "title": "Estimación de Costos",
+        "description": "Obtén presupuestos estimados basados en tus parámetros"
+      },
+      "ods": {
+        "title": "ODS Alineado",
+        "description": "Apoya el crecimiento económico sostenible y consumo responsable"
+      }
+    },
+    "odsTitle": "Objetivos de Desarrollo Sostenible",
+    "odsDescription": "Este proyecto está alineado con los ODS 8 y 12 de las Naciones Unidas",
+    "ods8Title": "ODS 8",
+    "ods8Description": "Trabajo decente y crecimiento económico: Promovemos el crecimiento económico inclusivo apoyando a pequeños emprendedores y empresas locales.",
+    "ods12Title": "ODS 12",
+    "ods12Description": "Producción y consumo responsables: Fomentamos el consumo responsable conectando directamente consumidores con proveedores locales."
+  },
   "services": {
     "title": "Servicios",
     "addService": "Agregar Servicio",
@@ -88,6 +120,7 @@
     "price": "Precio",
     "description": "Descripción",
     "provider": "Proveedor",
+    "emptyState": "No se encontraron servicios",
     "categories": {
       "catering": "Catering",
       "decoration": "Decoración",

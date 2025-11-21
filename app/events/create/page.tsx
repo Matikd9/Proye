@@ -12,6 +12,7 @@ export default function CreateEventPage() {
   const { locale } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    name: '',
     eventType: 'birthday',
     numberOfGuests: 10,
     ageRange: 'adults',
@@ -65,6 +66,19 @@ export default function CreateEventPage() {
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('events.name', locale)}
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              placeholder={t('events.namePlaceholder', locale)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('events.location', locale)}
             </label>
             <input
@@ -103,7 +117,12 @@ export default function CreateEventPage() {
               type="number"
               min="1"
               value={formData.numberOfGuests}
-              onChange={(e) => setFormData({ ...formData, numberOfGuests: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  numberOfGuests: Number.parseInt(e.target.value, 10) || 1,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             />

@@ -48,12 +48,38 @@ export async function PUT(
     }
 
     const data = await request.json();
+    const updates: Record<string, any> = { ...data };
+
+    if (typeof data.name === 'string') {
+      const trimmed = data.name.trim();
+      if (!trimmed) {
+        return NextResponse.json({ error: 'Event name cannot be empty' }, { status: 400 });
+      }
+      updates.name = trimmed;
+    }
+
+    if (typeof data.location === 'string') {
+      updates.location = data.location.trim().length > 0 ? data.location.trim() : 'Santiago, Chile';
+    }
+
+    if (typeof data.currency === 'string') {
+      updates.currency = data.currency.toUpperCase();
+    }
+
+    if ('budget' in data) {
+      const parsedBudget = typeof data.budget === 'number' ? data.budget : Number(data.budget);
+      if (Number.isFinite(parsedBudget)) {
+        updates.budget = parsedBudget;
+      } else {
+        delete updates.budget;
+      }
+    }
 
     await connectDB();
 
     const event = await Event.findOneAndUpdate(
       { _id: params.id, userId: session.user.id },
-      data,
+      updates,
       { new: true, runValidators: true }
     );
 

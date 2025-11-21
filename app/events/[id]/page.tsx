@@ -9,6 +9,7 @@ import { Sparkles, DollarSign, CheckCircle, Trash2, Edit2 } from 'lucide-react';
 
 interface Event {
   _id: string;
+  name: string;
   eventType: string;
   numberOfGuests: number;
   ageRange: string;
@@ -22,7 +23,12 @@ interface Event {
     suggestions: string[];
     breakdown: {
       category: string;
-      items: string[];
+      items: {
+        name: string;
+        price: number;
+        source: string;
+        notes?: string;
+      }[];
       estimatedCost: number;
     }[];
     recommendations: string[];
@@ -127,6 +133,8 @@ export default function EventDetailPage() {
     currency: currencyCode,
     maximumFractionDigits: 0,
   });
+  const translatedType = t(`events.eventTypes.${event.eventType}`, locale) || event.eventType;
+  const eventName = event.name && event.name.trim().length > 0 ? event.name : translatedType;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -134,9 +142,8 @@ export default function EventDetailPage() {
         <div className="bg-white shadow-md rounded-lg p-6 md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-start mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {t(`events.eventTypes.${event.eventType}`, locale) || event.eventType}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">{eventName}</h1>
+              <p className="text-sm text-gray-500">{translatedType}</p>
               <p className="text-gray-600">
                 {event.numberOfGuests} {t('events.numberOfGuests', locale)}
               </p>
@@ -243,11 +250,23 @@ export default function EventDetailPage() {
                             {currencyFormatter.format(category.estimatedCost)}
                           </span>
                         </div>
-                        <ul className="list-disc list-inside space-y-1 text-gray-700">
-                          {category.items.map((item, itemIndex) => (
-                            <li key={itemIndex}>{item}</li>
-                          ))}
-                        </ul>
+                        <div className="space-y-2">
+                          {(category.items || []).map((item, itemIndex) => {
+                            const itemPrice = typeof item.price === 'number' ? item.price : 0;
+                            return (
+                              <div key={itemIndex} className="border-t border-gray-200 pt-2 first:border-t-0 first:pt-0">
+                                <div className="flex items-center justify-between text-sm text-gray-800">
+                                  <span className="font-medium">{item.name}</span>
+                                  <span>{currencyFormatter.format(itemPrice)}</span>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  {t('events.itemSource', locale)}: {item.source || t('events.itemSourceUnknown', locale)}
+                                  {item.notes ? ` · ${item.notes}` : ''}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     ))}
                   </div>

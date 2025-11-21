@@ -22,6 +22,7 @@ import {
 
 interface Event {
   _id: string;
+  name: string;
   eventType: string;
   numberOfGuests: number;
   ageRange: string;
@@ -222,6 +223,8 @@ export default function MyEventsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => {
               const isSelected = selectedEvents.has(event._id);
+              const translatedType = t(`events.eventTypes.${event.eventType}`, locale) || event.eventType;
+              const displayName = event.name && event.name.trim().length > 0 ? event.name : translatedType;
               return (
                 <div
                   key={event._id}
@@ -240,10 +243,9 @@ export default function MyEventsPage() {
                         />
                       )}
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900">
-                          {t(`events.eventTypes.${event.eventType}`, locale) || event.eventType}
-                        </h3>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl font-semibold text-gray-900">{displayName}</h3>
+                        <p className="text-sm text-gray-500">{translatedType}</p>
+                        <p className="text-xs text-gray-400">
                           {new Date(event.createdAt).toLocaleDateString(locale)}
                         </p>
                       </div>

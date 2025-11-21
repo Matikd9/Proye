@@ -36,18 +36,27 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
+    const name = typeof data.name === 'string' ? data.name.trim() : '';
+
+    if (!name) {
+      return NextResponse.json({ error: 'Event name is required' }, { status: 400 });
+    }
+
+    const rawBudget =
+      typeof data.budget === 'number'
+        ? data.budget
+        : data.budget
+          ? Number(data.budget)
+          : undefined;
+
     const payload = {
       ...data,
+      name,
       location: typeof data.location === 'string' && data.location.trim().length > 0
         ? data.location.trim()
         : 'Santiago, Chile',
       currency: (data.currency || 'CLP').toString().toUpperCase(),
-      budget:
-        typeof data.budget === 'number'
-          ? data.budget
-          : data.budget
-            ? Number(data.budget)
-            : undefined,
+      budget: Number.isFinite(rawBudget) ? rawBudget : undefined,
     };
 
     await connectDB();

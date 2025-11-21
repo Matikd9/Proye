@@ -7,6 +7,7 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 
 interface EventFormData {
+  name: string;
   eventType: string;
   numberOfGuests: number;
   ageRange: string;
@@ -23,6 +24,7 @@ export default function EditEventPage() {
   const eventId = params?.id;
   const { locale } = useLanguage();
   const [formData, setFormData] = useState<EventFormData>({
+    name: '',
     eventType: 'birthday',
     numberOfGuests: 10,
     ageRange: 'adults',
@@ -51,6 +53,7 @@ export default function EditEventPage() {
       if (response.ok) {
         const data = await response.json();
         setFormData({
+          name: data.name || data.eventType || '',
           eventType: data.eventType,
           numberOfGuests: data.numberOfGuests,
           ageRange: data.ageRange,
@@ -115,6 +118,19 @@ export default function EditEventPage() {
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('events.name', locale)}
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              placeholder={t('events.namePlaceholder', locale)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('events.location', locale)}
             </label>
             <input
@@ -153,7 +169,12 @@ export default function EditEventPage() {
               type="number"
               min="1"
               value={formData.numberOfGuests}
-              onChange={(e) => setFormData({ ...formData, numberOfGuests: parseInt(e.target.value, 10) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  numberOfGuests: Number.parseInt(e.target.value, 10) || 1,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             />

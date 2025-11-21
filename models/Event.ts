@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IEvent extends Document {
   userId: mongoose.Types.ObjectId;
+  name: string;
   eventType: string;
   numberOfGuests: number;
   ageRange: string;
@@ -15,7 +16,12 @@ export interface IEvent extends Document {
     suggestions: string[];
     breakdown: {
       category: string;
-      items: string[];
+      items: {
+        name: string;
+        price: number;
+        source: string;
+        notes?: string;
+      }[];
       estimatedCost: number;
     }[];
     recommendations: string[];
@@ -30,6 +36,13 @@ const EventSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
+      default: 'Evento sin nombre',
     },
     eventType: {
       type: String,
@@ -75,7 +88,14 @@ const EventSchema: Schema = new Schema(
       breakdown: [
         {
           category: String,
-          items: [String],
+          items: [
+            {
+              name: String,
+              price: Number,
+              source: String,
+              notes: String,
+            },
+          ],
           estimatedCost: Number,
         },
       ],

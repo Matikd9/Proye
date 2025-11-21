@@ -37,6 +37,8 @@
     "title": "Eventos",
     "createEvent": "Crear Evento",
     "editEvent": "Editar Evento",
+    "name": "Nombre del evento",
+    "namePlaceholder": "Ej: Fiesta de fin de año",
     "aiPlanTitle": "Plan Generado por IA",
     "notFound": "Evento no encontrado",
     "eventType": "Tipo de Evento",
@@ -80,7 +82,9 @@
     "estimatedCost": "Costo Estimado",
     "suggestions": "Sugerencias",
     "recommendations": "Recomendaciones",
-    "breakdown": "Desglose de Costos"
+    "breakdown": "Desglose de Costos",
+    "itemSource": "Fuente",
+    "itemSourceUnknown": "Proveedor referencial"
   },
   "home": {
     "heroTitle": "Planifica tu Evento Perfecto",

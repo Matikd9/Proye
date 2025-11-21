@@ -16,6 +16,7 @@ export interface EventPlanningParams {
   ageRange: string;
   genderDistribution: string;
   location: string;
+  name?: string;
   budget?: number;
   preferences?: string;
   currency?: string;
@@ -26,21 +27,60 @@ export interface EventPlan {
   estimatedCost: number;
   breakdown: {
     category: string;
-    items: string[];
+    items: {
+      name: string;
+      price: number;
+      source: string;
+      notes?: string;
+    }[];
     estimatedCost: number;
   }[];
   recommendations: string[];
 }
 
+function normalizePlan(rawPlan: any): EventPlan {
+  return {
+    suggestions: Array.isArray(rawPlan?.suggestions) ? rawPlan.suggestions : [],
+    estimatedCost: typeof rawPlan?.estimatedCost === 'number' ? rawPlan.estimatedCost : 0,
+    breakdown: Array.isArray(rawPlan?.breakdown)
+      ? rawPlan.breakdown.map((category: any) => {
+          const itemsArray = Array.isArray(category?.items) ? category.items : [];
+          const normalizedItems = itemsArray.map((item: any, idx: number) => {
+            if (typeof item === 'string') {
+              return {
+                name: item,
+                price: Math.round(((category?.estimatedCost || 0) / Math.max(itemsArray.length, 1)) / 1000) * 1000,
+                source: 'Referencia local',
+              };
+            }
+            return {
+              name: item?.name || `Item ${idx + 1}`,
+              price: typeof item?.price === 'number' ? item.price : 0,
+              source: item?.source || 'Referencia local',
+              notes: item?.notes,
+            };
+          });
+
+          return {
+            category: category?.category || 'General',
+            items: normalizedItems,
+            estimatedCost: typeof category?.estimatedCost === 'number' ? category.estimatedCost : 0,
+          };
+        })
+      : [],
+    recommendations: Array.isArray(rawPlan?.recommendations) ? rawPlan.recommendations : [],
+  };
+}
+
 export async function generateEventPlan(params: EventPlanningParams, language: string = 'es'): Promise<EventPlan> {
   if (!genAI) {
     // Fallback response if Gemini is not configured
-    return {
+    return normalizePlan({
       suggestions: ['Configure GEMINI_API_KEY to enable AI planning'],
       estimatedCost: 0,
       breakdown: [],
       recommendations: [],
-    };
+    });
   }
 
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
@@ -66,18 +106,20 @@ Rango de edad: ${params.ageRange}
 Distribución de género: ${params.genderDistribution}
 Ubicación del evento: ${location}
 Presupuesto disponible (moneda ${currency}): ${budgetText}
+Nombre del evento: ${params.name || 'Evento personalizado'}
 Preferencias especiales: ${params.preferences || 'Ninguna específica'}
 
 Debes entregar:
 1. Sugerencias de actividades y elementos clave
 2. Costo estimado total
-3. Desglose por categorías (catering, decoración, entretenimiento, etc.) con items específicos y costos
+3. Desglose por categorías (catering, decoración, entretenimiento, etc.) con items específicos y costos individuales
 4. Recomendaciones adicionales con argumentos
 
 Condiciones adicionales:
 - Expresa todos los montos en ${currency}, redondeados al múltiplo de 1.000 más cercano.
 - Basa los precios en proveedores reales disponibles en ${location} (ej.: "Banquetería buffet en Providencia"). Si no hay un dato exacto, entrega un rango y explica la causa.
-- Incluye una breve justificación para cada costo clave (disponibilidad, calidad, temporada, etc.).
+- Cada item del desglose debe incluir nombre, precio individual y fuente (ej.: supermercado, marketplace o local comercial conocido). Prioriza tiendas chilenas como Lider, Jumbo, Tottus, Unimarc, Easy, Sodimac o locales específicos del barrio.
+- Incluye una breve justificación o nota cuando corresponda (temporada, calidad, porción por persona, etc.).
 - Menciona cómo cada bloque afecta el presupuesto disponible y advierte si alguna partida consume gran parte del total.
 
 Responde en JSON con esta estructura exacta:
@@ -87,7 +129,14 @@ Responde en JSON con esta estructura exacta:
   "breakdown": [
     {
       "category": "Catering",
-      "items": ["item1", "item2"],
+      "items": [
+        {
+          "name": "Item",
+          "price": 500,
+          "source": "Supermercado Lider",
+          "notes": "Opcional"
+        }
+      ],
       "estimatedCost": 500
     }
   ],
@@ -101,17 +150,19 @@ Age range: ${params.ageRange}
 Gender distribution: ${params.genderDistribution}
 Event location: ${location}
 Budget (currency ${currency}): ${budgetText}
+Event name: ${params.name || 'Custom event'}
 Preferences: ${params.preferences || 'None specific'}
 
 Provide:
 1. Suggestions for key activities and elements
 2. Total estimated cost
-3. Breakdown by categories (catering, decoration, entertainment, etc.) with concrete items and costs
+3. Breakdown by categories (catering, decoration, entertainment, etc.) with concrete items and individual costs
 4. Additional recommendations with rationale
 
 Additional rules:
 - Express every amount in ${currency}, rounded to the nearest 1,000.
 - Base prices on real providers in ${location}. State the provider type per item (e.g., "Local catering in Providencia").
+- Every item in the breakdown must include: name, individual price, and a source (supermarket, marketplace listing, or local provider). Favor Chilean sources like Lider, Jumbo, Tottus, Unimarc, Easy, Sodimac, Mercado Libre Chile, or a specific neighborhood business.
 - If only a range is available, share it and justify the variance (seasonality, demand, etc.).
 - Explain how each block impacts the available budget and highlight big-ticket items.
 
@@ -122,7 +173,14 @@ Respond strictly as JSON with this structure:
   "breakdown": [
     {
       "category": "Catering",
-      "items": ["item1", "item2"],
+      "items": [
+        {
+          "name": "Item",
+          "price": 500,
+          "source": "Lider.cl",
+          "notes": "Optional"
+        }
+      ],
       "estimatedCost": 500
     }
   ],
@@ -137,7 +195,8 @@ Respond strictly as JSON with this structure:
     // Extract JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      const parsed = JSON.parse(jsonMatch[0]);
+      return normalizePlan(parsed);
     }
     
     throw new Error('No JSON found in response');

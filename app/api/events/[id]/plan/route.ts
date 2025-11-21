@@ -31,6 +31,7 @@ export async function POST(
 
     const plan = await generateEventPlan(
       {
+        name: event.name || event.eventType,
         eventType: event.eventType,
         numberOfGuests: event.numberOfGuests,
         ageRange: event.ageRange,
@@ -43,6 +44,7 @@ export async function POST(
       language
     );
 
+    event.name = event.name || event.eventType;
     event.estimatedCost = plan.estimatedCost;
     event.aiPlan = {
       suggestions: plan.suggestions,

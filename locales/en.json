@@ -37,6 +37,8 @@
     "title": "Events",
     "createEvent": "Create Event",
     "editEvent": "Edit Event",
+    "name": "Event name",
+    "namePlaceholder": "e.g. Year-end party",
     "aiPlanTitle": "AI Generated Plan",
     "notFound": "Event not found",
     "eventType": "Event Type",
@@ -80,7 +82,9 @@
     "estimatedCost": "Estimated Cost",
     "suggestions": "Suggestions",
     "recommendations": "Recommendations",
-    "breakdown": "Cost Breakdown"
+    "breakdown": "Cost Breakdown",
+    "itemSource": "Source",
+    "itemSourceUnknown": "Reference provider"
   },
   "home": {
     "heroTitle": "Plan Your Perfect Event",

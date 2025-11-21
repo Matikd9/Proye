@@ -40,6 +40,7 @@ export async function POST(
         eventDate: event.eventDate?.toISOString?.() || event.eventDate,
         budget: event.budget,
         preferences: event.preferences,
+        spendingStyle: event.spendingStyle,
         currency: event.currency,
       },
       language

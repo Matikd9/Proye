@@ -21,6 +21,7 @@ export default function CreateEventPage() {
     eventDate: new Date().toISOString().split('T')[0],
     budget: '',
     preferences: '',
+    spendingStyle: 'balanced',
   });
 
   if (status === 'loading') {
@@ -189,6 +190,22 @@ export default function CreateEventPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               placeholder="Ej: 250000"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('events.spendingStyle.label', locale)}
+            </label>
+            <select
+              value={formData.spendingStyle}
+              onChange={(e) => setFormData({ ...formData, spendingStyle: e.target.value as 'value' | 'balanced' | 'premium' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="value">{t('events.spendingStyle.value', locale)}</option>
+              <option value="balanced">{t('events.spendingStyle.balanced', locale)}</option>
+              <option value="premium">{t('events.spendingStyle.premium', locale)}</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">{t('events.spendingStyle.help', locale)}</p>
           </div>
 
           <div>

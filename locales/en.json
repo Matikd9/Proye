@@ -51,6 +51,14 @@
     "location": "Location",
     "regeneratePlan": "Regenerate Plan",
     "preferences": "Preferences",
+    "spendingStyle": {
+      "label": "Shopping focus",
+      "short": "Focus",
+      "value": "Stretch the budget (more quantity even if quality drops)",
+      "balanced": "Balanced between cost and quality",
+      "premium": "Premium picks (higher quality, less quantity)",
+      "help": "Tell the planner if you prefer cheaper bulk options, a balance, or premium selections."
+    },
     "selectEvents": "Select events",
     "cancelSelection": "Cancel selection",
     "deleteSelected": "Delete selected",

@@ -12,6 +12,7 @@ export interface IEvent extends Document {
   budget?: number;
   preferences?: string;
   currency?: string;
+  spendingStyle?: 'value' | 'balanced' | 'premium';
   estimatedCost?: number;
   aiPlan?: {
     suggestions: string[];
@@ -78,6 +79,11 @@ const EventSchema: Schema = new Schema(
     },
     preferences: {
       type: String,
+    },
+    spendingStyle: {
+      type: String,
+      enum: ['value', 'balanced', 'premium'],
+      default: 'balanced',
     },
     currency: {
       type: String,

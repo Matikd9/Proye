@@ -51,6 +51,14 @@
     "location": "Ubicación",
     "regeneratePlan": "Regenerar plan con IA",
     "preferences": "Preferencias",
+    "spendingStyle": {
+      "label": "Estilo de compra",
+      "short": "Compra",
+      "value": "Buscar precios bajos (prioriza cantidad aunque sea menor calidad)",
+      "balanced": "Balanceado entre precio y calidad",
+      "premium": "Preferir marcas premium (menos cantidad, mayor calidad)",
+      "help": "Define si prefieres masificar con precios bajos, mantener equilibrio o apostar por productos premium."
+    },
     "selectEvents": "Seleccionar eventos",
     "cancelSelection": "Cancelar selección",
     "deleteSelected": "Eliminar seleccionados",

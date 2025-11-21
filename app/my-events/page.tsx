@@ -33,6 +33,7 @@ interface Event {
   estimatedCost?: number;
   currency?: string;
   createdAt: string;
+  spendingStyle?: 'value' | 'balanced' | 'premium';
 }
 
 export default function MyEventsPage() {
@@ -283,6 +284,12 @@ export default function MyEventsPage() {
                         <DollarSign className="h-4 w-4 mr-2" />
                         {t('events.estimatedCost', locale)}: {' '}
                         {formatCurrency(event.estimatedCost, event.currency || 'CLP')}
+                      </div>
+                    )}
+                    {event.spendingStyle && (
+                      <div className="flex items-center">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {t('events.spendingStyle.short', locale)}: {t(`events.spendingStyle.${event.spendingStyle}`, locale)}
                       </div>
                     )}
                   </div>

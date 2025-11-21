@@ -19,6 +19,7 @@ interface Event {
   budget?: number;
   preferences?: string;
   currency?: string;
+  spendingStyle?: 'value' | 'balanced' | 'premium';
   estimatedCost?: number;
   aiPlan?: {
     suggestions: string[];
@@ -145,6 +146,7 @@ export default function EventDetailPage() {
   });
   const translatedType = t(`events.eventTypes.${event.eventType}`, locale) || event.eventType;
   const eventName = event.name && event.name.trim().length > 0 ? event.name : translatedType;
+  const spendingStyleLabel = event.spendingStyle ? t(`events.spendingStyle.${event.spendingStyle}`, locale) : null;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -212,6 +214,12 @@ export default function EventDetailPage() {
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.budget', locale)}</h3>
                 <p className="text-lg">{currencyFormatter.format(event.budget)}</p>
+              </div>
+            )}
+            {spendingStyleLabel && (
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.spendingStyle.label', locale)}</h3>
+                <p className="text-lg">{spendingStyleLabel}</p>
               </div>
             )}
             {event.estimatedCost && (

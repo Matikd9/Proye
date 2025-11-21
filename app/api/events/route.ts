@@ -61,10 +61,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Event date is required' }, { status: 400 });
     }
 
+    const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
+    type SpendingStyle = (typeof allowedSpendingStyles)[number];
+    const spendingStyle =
+      typeof data.spendingStyle === 'string' && allowedSpendingStyles.includes(data.spendingStyle as SpendingStyle)
+        ? (data.spendingStyle as SpendingStyle)
+        : 'balanced';
+
     const payload = {
       ...data,
       name,
       eventDate,
+      spendingStyle,
       location: typeof data.location === 'string' && data.location.trim().length > 0
         ? data.location.trim()
         : 'Santiago, Chile',

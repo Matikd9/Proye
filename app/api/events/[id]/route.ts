@@ -4,6 +4,9 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 
+const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
+type SpendingStyle = (typeof allowedSpendingStyles)[number];
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -75,13 +78,19 @@ export async function PUT(
       }
     }
   
-        if (data.eventDate) {
-          const parsed = new Date(data.eventDate);
-          if (isNaN(parsed.getTime())) {
-            return NextResponse.json({ error: 'Invalid event date' }, { status: 400 });
-          }
-          updates.eventDate = parsed;
-        }
+    if (typeof data.spendingStyle === 'string') {
+      if (allowedSpendingStyles.includes(data.spendingStyle as SpendingStyle)) {
+        updates.spendingStyle = data.spendingStyle as SpendingStyle;
+      }
+    }
+
+    if (data.eventDate) {
+      const parsed = new Date(data.eventDate);
+      if (isNaN(parsed.getTime())) {
+        return NextResponse.json({ error: 'Invalid event date' }, { status: 400 });
+      }
+      updates.eventDate = parsed;
+    }
 
     await connectDB();
 

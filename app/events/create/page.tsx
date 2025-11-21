@@ -2,26 +2,36 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 
 export default function CreateEventPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale } = useLanguage();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    eventType: 'birthday',
-    numberOfGuests: 10,
-    ageRange: 'adults',
-    genderDistribution: 'mixed',
-    location: 'Santiago, Chile',
-    eventDate: new Date().toISOString().split('T')[0],
-    budget: '',
-    preferences: '',
-    spendingStyle: 'balanced',
+  const [formData, setFormData] = useState(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const parseNumber = (value: string | null, fallback: number) => {
+      if (!value) return fallback;
+      const parsed = Number.parseInt(value, 10);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+
+    return {
+      name: searchParams.get('name') ?? '',
+      eventType: searchParams.get('eventType') ?? 'birthday',
+      numberOfGuests: parseNumber(searchParams.get('numberOfGuests'), 10),
+      ageRange: searchParams.get('ageRange') ?? 'adults',
+      genderDistribution: searchParams.get('genderDistribution') ?? 'mixed',
+      location: searchParams.get('location') ?? 'Santiago, Chile',
+      eventDate: searchParams.get('eventDate') ?? today,
+      budget: searchParams.get('budget') ?? '',
+      preferences: searchParams.get('preferences') ?? '',
+      spendingStyle: (searchParams.get('spendingStyle') as 'value' | 'balanced' | 'premium') ?? 'balanced',
+    };
   });
 
   if (status === 'loading') {

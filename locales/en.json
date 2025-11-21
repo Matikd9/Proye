@@ -59,6 +59,16 @@
       "premium": "Premium picks (higher quality, less quantity)",
       "help": "Tell the planner if you prefer cheaper bulk options, a balance, or premium selections."
     },
+    "templates": {
+      "publicLabel": "Public templates",
+      "subtitle": "Browse curated ideas and spin up a similar event in one click.",
+      "idealGuests": "Ideal guests",
+      "budgetRange": "Budget range",
+      "highlights": "Highlights",
+      "loggedHint": "Values will prefill your creation form.",
+      "guestHint": "Sign in to save and edit this template.",
+      "useTemplate": "Use template"
+    },
     "selectEvents": "Select events",
     "cancelSelection": "Cancel selection",
     "deleteSelected": "Delete selected",

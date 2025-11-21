@@ -59,6 +59,16 @@
       "premium": "Preferir marcas premium (menos cantidad, mayor calidad)",
       "help": "Define si prefieres masificar con precios bajos, mantener equilibrio o apostar por productos premium."
     },
+    "templates": {
+      "publicLabel": "Plantillas públicas",
+      "subtitle": "Explora ideas prediseñadas y crea un evento similar con un solo clic.",
+      "idealGuests": "Invitados ideales",
+      "budgetRange": "Rango de presupuesto",
+      "highlights": "Destacados",
+      "loggedHint": "Los datos se precargarán en tu formulario de creación.",
+      "guestHint": "Inicia sesión para guardar y editar esta plantilla.",
+      "useTemplate": "Usar plantilla"
+    },
     "selectEvents": "Seleccionar eventos",
     "cancelSelection": "Cancelar selección",
     "deleteSelected": "Eliminar seleccionados",

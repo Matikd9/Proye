@@ -145,6 +145,38 @@
     "description": "Descripción",
     "provider": "Proveedor",
     "emptyState": "No se encontraron servicios",
+    "catalogTitle": "Marketplace curado de servicios",
+    "catalogSubtitle": "Proveedores confiables alineados con consumo responsable y economía local.",
+    "catalogListTitle": "Catálogo completo",
+    "featuredTitle": "Recomendados de la semana",
+    "priceRange": "Rango de precio",
+    "coverage": "Cobertura",
+    "highlights": "Incluye",
+    "contactHandle": "Contacto",
+    "heroStats": {
+      "curated": "10 servicios listos para reservar",
+      "localVendors": "80% proveedores locales",
+      "sdgAlignment": "Alineados con ODS 8 y 12"
+    },
+    "filters": {
+      "searchPlaceholder": "Busca por proveedor, servicio o palabra clave",
+      "categoryLabel": "Filtrar por categoría",
+      "areaLabel": "Filtrar por cobertura",
+      "budgetAll": "Cualquier presupuesto",
+      "budgetLean": "Presupuesto acotado",
+      "budgetStandard": "Presupuesto balanceado",
+      "budgetPremium": "Presupuesto premium",
+      "tagLabel": "Filtrar por enfoque"
+    },
+    "tags": {
+      "local": "Local",
+      "eco": "Eco",
+      "premium": "Premium",
+      "express": "Express"
+    },
+    "actions": {
+      "addToPlan": "Usar en mi evento"
+    },
     "categories": {
       "catering": "Catering",
       "decoration": "Decoración",

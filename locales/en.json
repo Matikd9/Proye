@@ -145,6 +145,38 @@
     "description": "Description",
     "provider": "Provider",
     "emptyState": "No services found",
+    "catalogTitle": "Curated Service Marketplace",
+    "catalogSubtitle": "Trusted providers and pop-up teams aligned with responsible consumption.",
+    "catalogListTitle": "All curated services",
+    "featuredTitle": "Recommended this week",
+    "priceRange": "Price range",
+    "coverage": "Coverage",
+    "highlights": "What you get",
+    "contactHandle": "Contact",
+    "heroStats": {
+      "curated": "10 ready-to-book services",
+      "localVendors": "80% local vendors",
+      "sdgAlignment": "Aligned with SDGs 8 & 12"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by provider, service, or keyword",
+      "categoryLabel": "Filter by category",
+      "areaLabel": "Filter by coverage area",
+      "budgetAll": "Any budget",
+      "budgetLean": "Budget-conscious",
+      "budgetStandard": "Balanced budget",
+      "budgetPremium": "Premium budget",
+      "tagLabel": "Filter by focus"
+    },
+    "tags": {
+      "local": "Local",
+      "eco": "Eco",
+      "premium": "Premium",
+      "express": "Express"
+    },
+    "actions": {
+      "addToPlan": "Use in my event"
+    },
     "categories": {
       "catering": "Catering",
       "decoration": "Decoration",

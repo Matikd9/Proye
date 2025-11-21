@@ -15,6 +15,7 @@ interface Event {
   ageRange: string;
   genderDistribution: string;
   location: string;
+  eventDate: string;
   budget?: number;
   preferences?: string;
   currency?: string;
@@ -128,6 +129,15 @@ export default function EventDetailPage() {
 
   const hasPlan = Boolean(event.aiPlan && Object.keys(event.aiPlan).length);
   const currencyCode = event.currency || 'CLP';
+  const eventDateObj = event.eventDate ? new Date(event.eventDate) : null;
+  const eventDateDisplay = eventDateObj && !isNaN(eventDateObj.getTime())
+    ? eventDateObj.toLocaleDateString(locale, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : t('events.eventDatePlaceholder', locale);
   const currencyFormatter = new Intl.NumberFormat('es-CL', {
     style: 'currency',
     currency: currencyCode,
@@ -185,6 +195,10 @@ export default function EventDetailPage() {
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.location', locale)}</h3>
               <p className="text-lg text-gray-900">{event.location}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.eventDate', locale)}</h3>
+              <p className="text-lg text-gray-900 capitalize">{eventDateDisplay}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">{t('events.ageRange', locale)}</h3>

@@ -49,9 +49,22 @@ export async function POST(request: NextRequest) {
           ? Number(data.budget)
           : undefined;
 
+    let eventDate: Date | null = null;
+    if (data.eventDate) {
+      const parsed = new Date(data.eventDate);
+      if (!isNaN(parsed.getTime())) {
+        eventDate = parsed;
+      }
+    }
+
+    if (!eventDate) {
+      return NextResponse.json({ error: 'Event date is required' }, { status: 400 });
+    }
+
     const payload = {
       ...data,
       name,
+      eventDate,
       location: typeof data.location === 'string' && data.location.trim().length > 0
         ? data.location.trim()
         : 'Santiago, Chile',

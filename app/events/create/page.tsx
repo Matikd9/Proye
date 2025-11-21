@@ -18,6 +18,7 @@ export default function CreateEventPage() {
     ageRange: 'adults',
     genderDistribution: 'mixed',
     location: 'Santiago, Chile',
+    eventDate: new Date().toISOString().split('T')[0],
     budget: '',
     preferences: '',
   });
@@ -87,6 +88,19 @@ export default function CreateEventPage() {
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               placeholder="Ej: Santiago, Chile"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('events.eventDate', locale)}
+            </label>
+            <input
+              type="date"
+              value={formData.eventDate}
+              onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             />
           </div>

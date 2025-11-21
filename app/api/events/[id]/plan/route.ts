@@ -37,6 +37,7 @@ export async function POST(
         ageRange: event.ageRange,
         genderDistribution: event.genderDistribution,
         location: event.location,
+        eventDate: event.eventDate?.toISOString?.() || event.eventDate,
         budget: event.budget,
         preferences: event.preferences,
         currency: event.currency,

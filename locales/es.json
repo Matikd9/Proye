@@ -39,6 +39,8 @@
     "editEvent": "Editar Evento",
     "name": "Nombre del evento",
     "namePlaceholder": "Ej: Fiesta de fin de año",
+    "eventDate": "Fecha del evento",
+    "eventDatePlaceholder": "Selecciona una fecha",
     "aiPlanTitle": "Plan Generado por IA",
     "notFound": "Evento no encontrado",
     "eventType": "Tipo de Evento",

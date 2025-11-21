@@ -13,6 +13,7 @@ interface EventFormData {
   ageRange: string;
   genderDistribution: string;
   location: string;
+  eventDate: string;
   budget: string;
   preferences: string;
 }
@@ -30,6 +31,7 @@ export default function EditEventPage() {
     ageRange: 'adults',
     genderDistribution: 'mixed',
     location: 'Santiago, Chile',
+    eventDate: new Date().toISOString().split('T')[0],
     budget: '',
     preferences: '',
   });
@@ -59,6 +61,7 @@ export default function EditEventPage() {
           ageRange: data.ageRange,
           genderDistribution: data.genderDistribution,
           location: data.location,
+          eventDate: data.eventDate ? new Date(data.eventDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           budget: data.budget ? data.budget.toString() : '',
           preferences: data.preferences || '',
         });
@@ -139,6 +142,19 @@ export default function EditEventPage() {
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               placeholder="Ej: Santiago, Chile"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('events.eventDate', locale)}
+            </label>
+            <input
+              type="date"
+              value={formData.eventDate}
+              onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             />
           </div>

@@ -39,6 +39,8 @@
     "editEvent": "Edit Event",
     "name": "Event name",
     "namePlaceholder": "e.g. Year-end party",
+    "eventDate": "Event date",
+    "eventDatePlaceholder": "Select a date",
     "aiPlanTitle": "AI Generated Plan",
     "notFound": "Event not found",
     "eventType": "Event Type",

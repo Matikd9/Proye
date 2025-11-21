@@ -28,6 +28,7 @@ interface Event {
   ageRange: string;
   genderDistribution: string;
   location: string;
+  eventDate: string;
   budget?: number;
   estimatedCost?: number;
   currency?: string;
@@ -225,6 +226,13 @@ export default function MyEventsPage() {
               const isSelected = selectedEvents.has(event._id);
               const translatedType = t(`events.eventTypes.${event.eventType}`, locale) || event.eventType;
               const displayName = event.name && event.name.trim().length > 0 ? event.name : translatedType;
+              const eventDateText = (() => {
+                const parsed = event.eventDate ? new Date(event.eventDate) : null;
+                if (parsed && !isNaN(parsed.getTime())) {
+                  return parsed.toLocaleDateString(locale);
+                }
+                return t('events.eventDatePlaceholder', locale);
+              })();
               return (
                 <div
                   key={event._id}
@@ -258,6 +266,10 @@ export default function MyEventsPage() {
                   </div>
 
                   <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {t('events.eventDate', locale)}: {eventDateText}
+                    </div>
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-2" />
                       {event.numberOfGuests} {t('events.numberOfGuests', locale)}

@@ -74,6 +74,14 @@ export async function PUT(
         delete updates.budget;
       }
     }
+  
+        if (data.eventDate) {
+          const parsed = new Date(data.eventDate);
+          if (isNaN(parsed.getTime())) {
+            return NextResponse.json({ error: 'Invalid event date' }, { status: 400 });
+          }
+          updates.eventDate = parsed;
+        }
 
     await connectDB();
 

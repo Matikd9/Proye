@@ -8,7 +8,8 @@ if (!GEMINI_API_KEY) {
 
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
-const MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const rawModelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+const MODEL_NAME = rawModelName.replace(/^models\//, '');
 
 export interface EventPlanningParams {
   eventType: string;
@@ -17,6 +18,7 @@ export interface EventPlanningParams {
   genderDistribution: string;
   location: string;
   name?: string;
+  eventDate?: string;
   budget?: number;
   preferences?: string;
   currency?: string;
@@ -36,6 +38,37 @@ export interface EventPlan {
     estimatedCost: number;
   }[];
   recommendations: string[];
+}
+
+function describeSeason(date: Date, language: string) {
+  const month = date.getMonth();
+  let season: 'summer' | 'autumn' | 'winter' | 'spring' = 'summer';
+  if (month >= 2 && month <= 4) {
+    season = 'autumn';
+  } else if (month >= 5 && month <= 7) {
+    season = 'winter';
+  } else if (month >= 8 && month <= 10) {
+    season = 'spring';
+  } else {
+    season = 'summer';
+  }
+
+  const labels = {
+    es: {
+      summer: 'Verano austral (temperaturas altas, radiación UV elevada, posibilidad de brisa costera).',
+      autumn: 'Otoño austral (tardes templadas, noches frías, inicio de lluvias suaves).',
+      winter: 'Invierno austral (temperaturas bajas, alta probabilidad de lluvia y viento).',
+      spring: 'Primavera austral (clima templado, posibles cambios bruscos y presencia de polen).',
+    },
+    en: {
+      summer: 'Southern summer (hot days, high UV index, potential coastal breeze).',
+      autumn: 'Southern autumn (mild afternoons, cooler nights, light rain starting).',
+      winter: 'Southern winter (cool to cold temperatures, higher chance of rain and wind).',
+      spring: 'Southern spring (mild weather, sudden changes possible, pollen in the air).',
+    },
+  } as const;
+
+  return labels[language === 'es' ? 'es' : 'en'][season];
 }
 
 function normalizePlan(rawPlan: any): EventPlan {
@@ -87,6 +120,25 @@ export async function generateEventPlan(params: EventPlanningParams, language: s
 
   const currency = params.currency || 'CLP';
   const location = params.location || 'Chile';
+  const eventDateObject = params.eventDate ? new Date(params.eventDate) : null;
+  const localeTag = language === 'es' ? 'es-CL' : 'en-US';
+  const eventDateText = eventDateObject && !isNaN(eventDateObject.getTime())
+    ? eventDateObject.toLocaleDateString(localeTag, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : language === 'es'
+      ? 'Por definir'
+      : 'To be confirmed';
+
+  const climateHint = eventDateObject && !isNaN(eventDateObject.getTime())
+    ? describeSeason(eventDateObject, language)
+    : language === 'es'
+      ? 'Sin fecha precisa, brinda recomendaciones climáticas generales para eventos en Chile.'
+      : 'Date TBD, provide general Chilean weather considerations for events.';
+
   const budgetText = params.budget
     ? new Intl.NumberFormat('es-CL', {
         style: 'currency',
@@ -105,6 +157,8 @@ Número de invitados: ${params.numberOfGuests}
 Rango de edad: ${params.ageRange}
 Distribución de género: ${params.genderDistribution}
 Ubicación del evento: ${location}
+Fecha del evento: ${eventDateText}
+Contexto climático estimado: ${climateHint}
 Presupuesto disponible (moneda ${currency}): ${budgetText}
 Nombre del evento: ${params.name || 'Evento personalizado'}
 Preferencias especiales: ${params.preferences || 'Ninguna específica'}
@@ -121,6 +175,7 @@ Condiciones adicionales:
 - Cada item del desglose debe incluir nombre, precio individual y fuente (ej.: supermercado, marketplace o local comercial conocido). Prioriza tiendas chilenas como Lider, Jumbo, Tottus, Unimarc, Easy, Sodimac o locales específicos del barrio.
 - Incluye una breve justificación o nota cuando corresponda (temporada, calidad, porción por persona, etc.).
 - Menciona cómo cada bloque afecta el presupuesto disponible y advierte si alguna partida consume gran parte del total.
+- Describe el clima esperado para la fecha en ${location}, menciona temperatura aproximada, probabilidad de lluvia/viento y recomendaciones concretas (toldos, indoor backup, calefacción, hidratación, bloqueador). Recuerda sugerir verificar el pronóstico oficial (Dirección Meteorológica de Chile / MeteoChile) 48 horas antes.
 
 Responde en JSON con esta estructura exacta:
 {
@@ -149,6 +204,8 @@ Number of guests: ${params.numberOfGuests}
 Age range: ${params.ageRange}
 Gender distribution: ${params.genderDistribution}
 Event location: ${location}
+Event date: ${eventDateText}
+Estimated climate context: ${climateHint}
 Budget (currency ${currency}): ${budgetText}
 Event name: ${params.name || 'Custom event'}
 Preferences: ${params.preferences || 'None specific'}
@@ -165,6 +222,7 @@ Additional rules:
 - Every item in the breakdown must include: name, individual price, and a source (supermarket, marketplace listing, or local provider). Favor Chilean sources like Lider, Jumbo, Tottus, Unimarc, Easy, Sodimac, Mercado Libre Chile, or a specific neighborhood business.
 - If only a range is available, share it and justify the variance (seasonality, demand, etc.).
 - Explain how each block impacts the available budget and highlight big-ticket items.
+- Include a brief weather outlook for ${location} around that date (temperature range, rain/wind risk) and tie it to actionable advice (tents, heaters, hydration, sunscreen, indoor backup). Remind readers to confirm the forecast with MeteoChile or a reliable weather app 48 hours before the event.
 
 Respond strictly as JSON with this structure:
 {

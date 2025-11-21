@@ -8,6 +8,7 @@ export interface IEvent extends Document {
   ageRange: string;
   genderDistribution: string;
   location: string;
+  eventDate: Date;
   budget?: number;
   preferences?: string;
   currency?: string;
@@ -46,6 +47,10 @@ const EventSchema: Schema = new Schema(
     },
     eventType: {
       type: String,
+      required: true,
+    },
+    eventDate: {
+      type: Date,
       required: true,
     },
     numberOfGuests: {

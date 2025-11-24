@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 
-export default function CreateEventPage() {
+function CreateEventForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -250,6 +250,15 @@ export default function CreateEventPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CreateEventPage() {
+  const { locale } = useLanguage();
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>}>
+      <CreateEventForm />
+    </Suspense>
   );
 }
 

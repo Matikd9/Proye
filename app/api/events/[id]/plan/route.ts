@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import type { NextAuthOptions } from 'next-auth';
+import authConfig from '../../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import { generateEventPlan } from '@/lib/gemini';
@@ -10,7 +11,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authConfig as NextAuthOptions);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -29,6 +30,12 @@ export async function POST(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
+    const eventDateString = event.eventDate instanceof Date
+      ? event.eventDate.toISOString()
+      : typeof event.eventDate === 'string'
+        ? event.eventDate
+        : undefined;
+
     const plan = await generateEventPlan(
       {
         name: event.name || event.eventType,
@@ -37,7 +44,7 @@ export async function POST(
         ageRange: event.ageRange,
         genderDistribution: event.genderDistribution,
         location: event.location,
-        eventDate: event.eventDate?.toISOString?.() || event.eventDate,
+        eventDate: eventDateString,
         budget: event.budget,
         preferences: event.preferences,
         spendingStyle: event.spendingStyle,

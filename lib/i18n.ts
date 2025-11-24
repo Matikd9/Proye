@@ -3,7 +3,9 @@ import en from '@/locales/en.json';
 
 export type Locale = 'es' | 'en';
 
-const translations: Record<Locale, Record<string, string>> = {
+type TranslationNode = string | { [key: string]: TranslationNode };
+
+const translations: Record<Locale, TranslationNode> = {
   es,
   en,
 };

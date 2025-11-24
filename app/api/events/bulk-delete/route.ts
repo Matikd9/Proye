@@ -5,6 +5,10 @@ import authConfig from '../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 
+type BulkDeletePayload = {
+  ids: string[];
+};
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authConfig as NextAuthOptions);
@@ -13,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { ids } = await request.json();
+    const { ids } = (await request.json()) as Partial<BulkDeletePayload>;
 
     if (!Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
@@ -30,10 +34,11 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ deletedCount: result.deletedCount ?? 0 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting events:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

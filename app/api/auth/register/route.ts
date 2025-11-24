@@ -3,9 +3,15 @@ import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { hashPassword } from '@/lib/auth';
 
+type RegisterPayload = {
+  email: string;
+  password: string;
+  name: string;
+};
+
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name } = await request.json();
+    const { email, password, name } = (await request.json()) as Partial<RegisterPayload>;
 
     if (!email || !password || !name) {
       return NextResponse.json(
@@ -45,10 +51,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

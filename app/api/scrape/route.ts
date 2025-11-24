@@ -12,10 +12,11 @@ export async function GET(request: NextRequest) {
     const services = await scrapeEventServices(category, location);
 
     return NextResponse.json(services);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error scraping services:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

@@ -5,9 +5,10 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FullPageLoader } from '@/components/FullPageLoader';
 
 function CreateEventForm() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { locale } = useLanguage();
@@ -35,7 +36,7 @@ function CreateEventForm() {
   });
 
   if (status === 'loading') {
-    return <div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>;
+    return <FullPageLoader />;
   }
 
   if (status === 'unauthenticated') {
@@ -65,6 +66,7 @@ function CreateEventForm() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Error creating event', error);
       alert(t('common.error', locale));
     } finally {
       setLoading(false);
@@ -254,9 +256,8 @@ function CreateEventForm() {
 }
 
 export default function CreateEventPage() {
-  const { locale } = useLanguage();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>}>
+    <Suspense fallback={<FullPageLoader />}>
       <CreateEventForm />
     </Suspense>
   );

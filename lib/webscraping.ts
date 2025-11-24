@@ -15,8 +15,6 @@ export async function scrapeEventServices(
   category: string,
   location: string = 'Chile'
 ): Promise<ScrapedService[]> {
-  const services: ScrapedService[] = [];
-
   try {
     // Ejemplo: Scraping de sitios de servicios de eventos
     // En un caso real, aquí harías scraping de sitios como:
@@ -51,10 +49,16 @@ export async function scrapeEventServices(
       },
     ];
 
-    return exampleServices.filter(s => 
-      s.category.toLowerCase().includes(category.toLowerCase())
-    );
-  } catch (error) {
+    const normalizedCategory = category.toLowerCase();
+    const normalizedLocation = location.trim();
+
+    return exampleServices
+      .filter((service) => service.category.toLowerCase().includes(normalizedCategory))
+      .map((service) => ({
+        ...service,
+        provider: `${service.provider} · ${normalizedLocation}`,
+      }));
+  } catch (error: unknown) {
     console.error('Error scraping services:', error);
     return [];
   }
@@ -93,7 +97,7 @@ export async function scrapeProductPrices(url: string): Promise<number | null> {
     }
 
     return null;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error scraping product price:', error);
     return null;
   }

@@ -18,6 +18,20 @@
     "success": "Success",
     "networkError": "Something went wrong. Please try again."
   },
+  "errorPage": {
+    "badge": "Unexpected issue",
+    "title": "We hit a snag",
+    "description": "Give us a second – we already logged the error. You can try again or go back to the homepage.",
+    "ctaRetry": "Try again",
+    "ctaHome": "Go home",
+    "footer": "If this keeps happening, contact support."
+  },
+  "loading": {
+    "fullPage": {
+      "title": "Hang tight, loading...",
+      "description": "We are getting everything ready."
+    }
+  },
   "nav": {
     "home": "Home",
     "events": "Events",
@@ -114,6 +128,11 @@
       "balanced": "Balanced"
     },
     "planEvent": "Plan Event with AI",
+    "loading": {
+      "badge": "Loading events",
+      "title": "Gathering curated inspiration",
+      "description": "We are loading recommended templates and upcoming plans."
+    },
     "estimatedCost": "Estimated Cost",
     "suggestions": "Suggestions",
     "recommendations": "Recommendations",
@@ -199,6 +218,13 @@
       "music": "Music",
       "venue": "Venue",
       "other": "Other"
+    }
+  },
+  "myEventsPage": {
+    "loading": {
+      "badge": "Loading your events",
+      "title": "Syncing your plans",
+      "description": "Hold on while we fetch your saved events and latest budgets."
     }
   },
   "ods": {

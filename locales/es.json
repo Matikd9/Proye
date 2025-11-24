@@ -18,6 +18,20 @@
     "success": "Éxito",
     "networkError": "Tuvimos un problema, intenta nuevamente."
   },
+  "errorPage": {
+    "badge": "Algo salió mal",
+    "title": "Tuvimos un inconveniente",
+    "description": "Ya registramos el error. Puedes reintentar la vista o volver al inicio.",
+    "ctaRetry": "Reintentar",
+    "ctaHome": "Ir al inicio",
+    "footer": "Si persiste, contáctanos para ayudarte."
+  },
+  "loading": {
+    "fullPage": {
+      "title": "Cargando, un momento...",
+      "description": "Estamos preparando tus datos."
+    }
+  },
   "nav": {
     "home": "Inicio",
     "events": "Eventos",
@@ -114,6 +128,11 @@
       "balanced": "Balanceado"
     },
     "planEvent": "Planificar Evento con IA",
+    "loading": {
+      "badge": "Cargando eventos",
+      "title": "Preparando inspiración curada",
+      "description": "Estamos cargando plantillas recomendadas y tus próximos eventos."
+    },
     "estimatedCost": "Costo Estimado",
     "suggestions": "Sugerencias",
     "recommendations": "Recomendaciones",
@@ -199,6 +218,13 @@
       "music": "Música",
       "venue": "Lugar",
       "other": "Otro"
+    }
+  },
+  "myEventsPage": {
+    "loading": {
+      "badge": "Cargando tus eventos",
+      "title": "Sincronizando tus planes",
+      "description": "Un momento mientras recuperamos tus eventos guardados y últimos presupuestos."
     }
   },
   "ods": {

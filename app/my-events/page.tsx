@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FullPageLoader } from '@/components/FullPageLoader';
 import {
   Plus,
   Calendar,
@@ -116,6 +117,7 @@ export default function MyEventsPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Bulk delete failed', error);
       alert(t('common.error', locale));
     } finally {
       setBulkDeleting(false);
@@ -142,6 +144,7 @@ export default function MyEventsPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Delete event failed', error);
       alert(t('common.error', locale));
     } finally {
       setDeletingEventId(null);
@@ -150,9 +153,10 @@ export default function MyEventsPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">{t('common.loading', locale)}</div>
-      </div>
+      <FullPageLoader
+        messageKey="myEventsPage.loading.title"
+        descriptionKey="myEventsPage.loading.description"
+      />
     );
   }
 

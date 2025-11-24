@@ -3,7 +3,8 @@ import en from '@/locales/en.json';
 
 export type Locale = 'es' | 'en';
 
-type TranslationNode = string | { [key: string]: TranslationNode };
+type TranslationNode = string | TranslationMap;
+type TranslationMap = { [key: string]: TranslationNode };
 
 const translations: Record<Locale, TranslationNode> = {
   es,
@@ -12,11 +13,11 @@ const translations: Record<Locale, TranslationNode> = {
 
 export function getTranslation(key: string, locale: Locale = 'es'): string {
   const keys = key.split('.');
-  let value: any = translations[locale];
+  let value: TranslationNode = translations[locale];
 
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {
-      value = value[k];
+      value = (value as TranslationMap)[k];
     } else {
       return key; // Return key if translation not found
     }

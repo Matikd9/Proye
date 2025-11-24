@@ -6,6 +6,10 @@ import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import { generateEventPlan } from '@/lib/gemini';
 
+type PlanRequestPayload = {
+  language?: string;
+};
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -17,7 +21,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { language = 'es' } = await request.json();
+    const { language = 'es' } = (await request.json()) as PlanRequestPayload;
 
     await connectDB();
 
@@ -64,10 +68,11 @@ export async function POST(
     await event.save();
 
     return NextResponse.json(plan);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating plan:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

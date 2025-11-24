@@ -9,7 +9,7 @@ const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
 type SpendingStyle = (typeof allowedSpendingStyles)[number];
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -31,14 +31,25 @@ export async function GET(
     }
 
     return NextResponse.json(event);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching event:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }
 }
+
+type EventUpdatePayload = {
+  name?: string;
+  location?: string;
+  currency?: string;
+  budget?: number | string;
+  spendingStyle?: SpendingStyle;
+  eventDate?: string | Date;
+  [key: string]: unknown;
+};
 
 export async function PUT(
   request: NextRequest,
@@ -51,8 +62,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await request.json();
-    const updates: Record<string, any> = { ...data };
+    const data = (await request.json()) as EventUpdatePayload;
+    const updates: EventUpdatePayload = { ...data };
 
     if (typeof data.name === 'string') {
       const trimmed = data.name.trim();
@@ -106,17 +117,18 @@ export async function PUT(
     }
 
     return NextResponse.json(event);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating event:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -138,10 +150,11 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: 'Event deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting event:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: message },
       { status: 500 }
     );
   }

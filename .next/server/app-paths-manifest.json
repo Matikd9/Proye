@@ -1,8 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/events/[id]/page": "app/events/[id]/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/events/[id]/edit/page": "app/events/[id]/edit/page.js",
-  "/services/page": "app/services/page.js",
-  "/events/page": "app/events/page.js"
-}

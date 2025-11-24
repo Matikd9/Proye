@@ -1,3 +1,13 @@
-node_modules
+# Dependencias
+node_modules/
+
+# Next.js
+.next/
+build/
+
+# Entorno
 .env
-.next
+
+# editor
+.vscode/
+.idea/

@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FormError, FormSuccess } from '@/components/FormMessages';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,23 +18,72 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
+  type FieldKey = keyof typeof formData;
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleFieldChange = (field: FieldKey, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validateFields = () => {
+    const errors: Partial<Record<FieldKey, string>> = {};
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedPassword = formData.password.trim();
+    const trimmedConfirm = formData.confirmPassword.trim();
+
+    if (!trimmedName) {
+      errors.name = t('auth.errors.nameRequired', locale);
+    } else if (trimmedName.length < 2 || trimmedName.length > 80) {
+      errors.name = t('auth.errors.nameLength', locale);
+    }
+
+    if (!trimmedEmail) {
+      errors.email = t('auth.errors.emailRequired', locale);
+    } else if (!emailRegex.test(trimmedEmail)) {
+      errors.email = t('auth.errors.emailInvalid', locale);
+    }
+
+    if (!trimmedPassword) {
+      errors.password = t('auth.errors.passwordRequired', locale);
+    } else if (trimmedPassword.length < 6) {
+      errors.password = t('auth.errors.passwordLength', locale);
+    }
+
+    if (!trimmedConfirm) {
+      errors.confirmPassword = t('auth.errors.confirmPasswordRequired', locale);
+    } else if (trimmedConfirm !== trimmedPassword) {
+      errors.confirmPassword = t('auth.errors.passwordMismatch', locale);
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
+    setFormError(null);
+    setFormSuccess(null);
+    if (!validateFields()) return;
     setLoading(true);
 
     try {
@@ -48,12 +100,18 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || t('common.error', locale));
+        setFormError(data.error || t('common.networkError', locale));
       } else {
-        router.push('/auth/signin?registered=true');
+        setFormSuccess(t('auth.status.registered', locale));
+        setFieldErrors({});
+        setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+        redirectTimeoutRef.current = setTimeout(() => {
+          router.push('/auth/signin?registered=true');
+        }, 800);
       }
     } catch (err) {
-      setError(t('common.error', locale));
+      console.error('Register request failed', err);
+      setFormError(t('common.networkError', locale));
     } finally {
       setLoading(false);
     }
@@ -68,11 +126,8 @@ export default function RegisterPage() {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
+          <FormSuccess message={formSuccess} />
+          <FormError message={formError} />
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -85,8 +140,11 @@ export default function RegisterPage() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleFieldChange('name', e.target.value)}
               />
+              {fieldErrors.name && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
+              )}
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -99,8 +157,11 @@ export default function RegisterPage() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleFieldChange('email', e.target.value)}
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -113,8 +174,11 @@ export default function RegisterPage() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => handleFieldChange('password', e.target.value)}
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
+              )}
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
@@ -127,8 +191,11 @@ export default function RegisterPage() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                 value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
               />
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>
+              )}
             </div>
           </div>
 

@@ -15,7 +15,8 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "networkError": "Something went wrong. Please try again."
   },
   "nav": {
     "home": "Home",
@@ -31,7 +32,21 @@
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
     "forgotPassword": "Forgot your password?",
-    "invalidCredentials": "Invalid credentials"
+    "invalidCredentials": "Invalid credentials",
+    "status": {
+      "registered": "Account created! You can sign in now.",
+      "signedIn": "Signed in successfully."
+    },
+    "errors": {
+      "nameRequired": "Name is required.",
+      "nameLength": "Name must be between 2 and 80 characters.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Password is required.",
+      "passwordLength": "Password must be at least 6 characters long.",
+      "confirmPasswordRequired": "Please confirm your password.",
+      "passwordMismatch": "Passwords do not match."
+    }
   },
   "events": {
     "title": "Events",

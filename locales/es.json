@@ -15,7 +15,8 @@
     "search": "Buscar",
     "loading": "Cargando...",
     "error": "Error",
-    "success": "Éxito"
+    "success": "Éxito",
+    "networkError": "Tuvimos un problema, intenta nuevamente."
   },
   "nav": {
     "home": "Inicio",
@@ -31,7 +32,21 @@
     "alreadyHaveAccount": "¿Ya tienes cuenta?",
     "dontHaveAccount": "¿No tienes cuenta?",
     "forgotPassword": "¿Olvidaste tu contraseña?",
-    "invalidCredentials": "Credenciales inválidas"
+    "invalidCredentials": "Credenciales inválidas",
+    "status": {
+      "registered": "Cuenta creada. Ya puedes iniciar sesión.",
+      "signedIn": "Sesión iniciada correctamente."
+    },
+    "errors": {
+      "nameRequired": "El nombre es obligatorio.",
+      "nameLength": "El nombre debe tener entre 2 y 80 caracteres.",
+      "emailRequired": "El correo es obligatorio.",
+      "emailInvalid": "Ingresa un correo válido.",
+      "passwordRequired": "La contraseña es obligatoria.",
+      "passwordLength": "La contraseña debe tener al menos 6 caracteres.",
+      "confirmPasswordRequired": "Confirma tu contraseña.",
+      "passwordMismatch": "Las contraseñas no coinciden."
+    }
   },
   "events": {
     "title": "Eventos",

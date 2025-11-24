@@ -4,9 +4,25 @@ import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
+import { sanitizeOptionalText, sanitizeText } from '@/lib/sanitize';
 
 const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
 type SpendingStyle = (typeof allowedSpendingStyles)[number];
+const EVENT_NAME_LIMIT = 120;
+const LOCATION_LIMIT = 160;
+const PREF_LIMIT = 1500;
+
+const sanitizeEventResponse = (event: unknown) => {
+  if (!event) return event;
+  const obj = typeof event === 'object' && event !== null && 'toObject' in event
+    ? (event as { toObject: () => Record<string, unknown> }).toObject()
+    : event;
+  if (obj && typeof obj === 'object') {
+    delete (obj as Record<string, unknown>).userId;
+    delete (obj as Record<string, unknown>).__v;
+  }
+  return obj;
+};
 
 export async function GET(
   _request: NextRequest,
@@ -24,13 +40,13 @@ export async function GET(
     const event = await Event.findOne({
       _id: params.id,
       userId: session.user.id,
-    });
+    }).select('-userId -__v');
 
     if (!event) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    return NextResponse.json(event);
+    return NextResponse.json(sanitizeEventResponse(event));
   } catch (error: unknown) {
     console.error('Error fetching event:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
@@ -48,6 +64,7 @@ type EventUpdatePayload = {
   budget?: number | string;
   spendingStyle?: SpendingStyle;
   eventDate?: string | Date;
+  preferences?: string;
   [key: string]: unknown;
 };
 
@@ -65,16 +82,21 @@ export async function PUT(
     const data = (await request.json()) as EventUpdatePayload;
     const updates: EventUpdatePayload = { ...data };
 
-    if (typeof data.name === 'string') {
-      const trimmed = data.name.trim();
-      if (!trimmed) {
+    if ('name' in data) {
+      const name = sanitizeText(data.name, { maxLength: EVENT_NAME_LIMIT });
+      if (!name) {
         return NextResponse.json({ error: 'Event name cannot be empty' }, { status: 400 });
       }
-      updates.name = trimmed;
+      updates.name = name;
     }
 
-    if (typeof data.location === 'string') {
-      updates.location = data.location.trim().length > 0 ? data.location.trim() : 'Santiago, Chile';
+    if ('location' in data) {
+      const location = sanitizeText(data.location ?? 'Santiago, Chile', {
+        maxLength: LOCATION_LIMIT,
+        allowEmpty: true,
+        fallback: 'Santiago, Chile',
+      }) || 'Santiago, Chile';
+      updates.location = location;
     }
 
     if (typeof data.currency === 'string') {
@@ -104,19 +126,23 @@ export async function PUT(
       updates.eventDate = parsed;
     }
 
+    if ('preferences' in data) {
+      updates.preferences = sanitizeOptionalText(data.preferences, { maxLength: PREF_LIMIT });
+    }
+
     await connectDB();
 
     const event = await Event.findOneAndUpdate(
       { _id: params.id, userId: session.user.id },
       updates,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, projection: '-userId -__v' }
     );
 
     if (!event) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    return NextResponse.json(event);
+    return NextResponse.json(sanitizeEventResponse(event));
   } catch (error: unknown) {
     console.error('Error updating event:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';

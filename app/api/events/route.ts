@@ -4,6 +4,23 @@ import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
+import { sanitizeOptionalText, sanitizeText } from '@/lib/sanitize';
+
+const EVENT_NAME_LIMIT = 120;
+const LOCATION_LIMIT = 160;
+const PREF_LIMIT = 1500;
+
+const redactEvent = (event: unknown) => {
+  if (!event) return event;
+  const plain = typeof event === 'object' && event !== null && 'toObject' in event
+    ? (event as { toObject: () => Record<string, unknown> }).toObject()
+    : event;
+  if (plain && typeof plain === 'object') {
+    delete (plain as Record<string, unknown>).userId;
+    delete (plain as Record<string, unknown>).__v;
+  }
+  return plain;
+};
 
 export async function GET() {
   try {
@@ -15,8 +32,11 @@ export async function GET() {
 
     await connectDB();
 
-    const events = await Event.find({ userId: session.user.id }).sort({ createdAt: -1 });
-    return NextResponse.json(events);
+    const events = await Event.find({ userId: session.user.id })
+      .sort({ createdAt: -1 })
+      .select('-userId -__v');
+
+    return NextResponse.json(events.map((event) => redactEvent(event)));
   } catch (error: unknown) {
     console.error('Error fetching events:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
@@ -47,8 +67,7 @@ export async function POST(request: Request) {
 
     const data = (await request.json()) as CreateEventPayload;
 
-    const name = typeof data.name === 'string' ? data.name.trim() : '';
-
+    const name = sanitizeText(data.name, { maxLength: EVENT_NAME_LIMIT });
     if (!name) {
       return NextResponse.json({ error: 'Event name is required' }, { status: 400 });
     }
@@ -79,15 +98,22 @@ export async function POST(request: Request) {
         ? (data.spendingStyle as SpendingStyle)
         : 'balanced';
 
+    const location = sanitizeText(data.location ?? 'Santiago, Chile', {
+      maxLength: LOCATION_LIMIT,
+      allowEmpty: true,
+      fallback: 'Santiago, Chile',
+    }) || 'Santiago, Chile';
+    const currency = typeof data.currency === 'string' ? data.currency.toUpperCase() : 'CLP';
+    const preferences = sanitizeOptionalText(data.preferences, { maxLength: PREF_LIMIT });
+
     const payload = {
       ...data,
       name,
       eventDate,
       spendingStyle,
-      location: typeof data.location === 'string' && data.location.trim().length > 0
-        ? data.location.trim()
-        : 'Santiago, Chile',
-      currency: (data.currency || 'CLP').toString().toUpperCase(),
+      location,
+      currency,
+      preferences,
       budget: Number.isFinite(rawBudget) ? rawBudget : undefined,
     };
 
@@ -98,7 +124,7 @@ export async function POST(request: Request) {
       userId: session.user.id,
     });
 
-    return NextResponse.json(event, { status: 201 });
+    return NextResponse.json(redactEvent(event), { status: 201 });
   } catch (error: unknown) {
     console.error('Error creating event:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';

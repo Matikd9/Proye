@@ -2,22 +2,55 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FormError, FormSuccess } from '@/components/FormMessages';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const successMessage =
+    searchParams.get('registered') === 'true'
+      ? t('auth.status.registered', locale)
+      : formSuccess;
+
+  const validateFields = () => {
+    const errors: { email?: string; password?: string } = {};
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail) {
+      errors.email = t('auth.errors.emailRequired', locale);
+    } else if (!emailRegex.test(trimmedEmail)) {
+      errors.email = t('auth.errors.emailInvalid', locale);
+    }
+
+    if (!trimmedPassword) {
+      errors.password = t('auth.errors.passwordRequired', locale);
+    } else if (trimmedPassword.length < 6) {
+      errors.password = t('auth.errors.passwordLength', locale);
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setFormError(null);
+    setFormSuccess(null);
+    if (!validateFields()) return;
     setLoading(true);
 
     try {
@@ -28,19 +61,23 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError(t('auth.invalidCredentials', locale));
+        setFormError(t('auth.invalidCredentials', locale));
       } else {
+        setFormSuccess(t('auth.status.signedIn', locale));
         router.push('/my-events');
         router.refresh();
       }
     } catch (err) {
-      setError(t('common.error', locale));
+      console.error('Email sign-in failed', err);
+      setFormError(t('common.networkError', locale));
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignIn = () => {
+    setFormError(null);
+    setFormSuccess(null);
     signIn('google', { callbackUrl: '/my-events' });
   };
 
@@ -53,13 +90,11 @@ export default function SignInPage() {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleEmailSignIn}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
+          <FormSuccess message={successMessage} />
+          <FormError message={formError} />
+
           <div className="rounded-md shadow-sm -space-y-px">
-            <div>
+            <div className="pb-2">
               <label htmlFor="email" className="sr-only">
                 {t('common.email', locale)}
               </label>
@@ -74,8 +109,11 @@ export default function SignInPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+              )}
             </div>
-            <div>
+            <div className="pt-2">
               <label htmlFor="password" className="sr-only">
                 {t('common.password', locale)}
               </label>
@@ -90,6 +128,9 @@ export default function SignInPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
+              )}
             </div>
           </div>
 

@@ -5,6 +5,17 @@ import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { verifyPassword } from '@/lib/auth';
 
+const sanitizeImage = (image?: string | null) => {
+  if (!image) return undefined;
+  if (image.startsWith('data:')) {
+    return undefined;
+  }
+  if (image.length > 1024) {
+    return undefined;
+  }
+  return image;
+};
+
 const authConfig: NextAuthOptions = {
   debug: false,
   providers: [
@@ -78,12 +89,24 @@ const authConfig: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id as string;
+        if (typeof token.name === 'string') {
+          session.user.name = token.name;
+        }
+        if (typeof token.email === 'string') {
+          session.user.email = token.email;
+        }
+        if (typeof token.picture === 'string' || typeof token.picture === 'undefined') {
+          session.user.image = token.picture as string | undefined;
+        }
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         (token as any).id = (user as any).id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = sanitizeImage(user.image);
       }
       return token;
     },

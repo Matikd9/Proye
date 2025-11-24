@@ -6,7 +6,7 @@ import User from '@/models/User';
 import { verifyPassword } from '@/lib/auth';
 
 export const authOptions: NextAuthOptions = {
-  debug:true,
+  debug:false,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',

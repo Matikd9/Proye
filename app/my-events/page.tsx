@@ -117,7 +117,7 @@ export default function MyEventsPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Bulk delete failed', error);
+      console.error('Error deleting events in bulk:', error);
       alert(t('common.error', locale));
     } finally {
       setBulkDeleting(false);
@@ -144,7 +144,7 @@ export default function MyEventsPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Delete event failed', error);
+      console.error('Error deleting event:', error);
       alert(t('common.error', locale));
     } finally {
       setDeletingEventId(null);

@@ -41,6 +41,37 @@ export interface EventPlan {
   recommendations: string[];
 }
 
+type RawRecommendation =
+  | string
+  | {
+      title?: string;
+      argument?: string;
+    }
+  | null
+  | undefined;
+
+interface RawBreakdownItem {
+  name?: string;
+  price?: number;
+  source?: string;
+  notes?: string;
+}
+
+type NormalizedItemSource = RawBreakdownItem | string | null | undefined;
+
+interface RawBreakdownCategory {
+  category?: string;
+  items?: NormalizedItemSource[];
+  estimatedCost?: number;
+}
+
+interface RawPlan {
+  suggestions?: unknown;
+  estimatedCost?: unknown;
+  breakdown?: unknown;
+  recommendations?: unknown;
+}
+
 function describeSeason(date: Date, language: string) {
   const month = date.getMonth();
   let season: 'summer' | 'autumn' | 'winter' | 'spring' = 'summer';
@@ -94,13 +125,22 @@ type RawPlanItem = {
 
 function normalizePlan(rawPlan: unknown): EventPlan {
   const plan = (rawPlan ?? {}) as RawPlan;
-
+  
+  type RawRecommendation =
+  | string
+  | {
+      title?: string;
+      argument?: string;
+    }
+  | null
+  | undefined;
+  
   const normalizeRecommendations = (recommendations: unknown): string[] => {
     if (!Array.isArray(recommendations)) {
       return [];
     }
 
-    return recommendations.map((entry, idx) => {
+    return recommendations.map((item: RawRecommendation, idx: number) => {
       if (typeof entry === 'string') {
         return entry;
       }
@@ -369,7 +409,7 @@ Respond strictly as JSON with this structure:
     throw new Error('No JSON found in response');
   } catch (error: unknown) {
     console.error('Error generating event plan:', error);
-    throw error;
+    throw error instanceof Error ? error : new Error('Unknown error generating event plan');
   }
 }
 

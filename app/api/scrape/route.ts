@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Error scraping services:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

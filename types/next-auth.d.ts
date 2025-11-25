@@ -6,7 +6,9 @@ declare module 'next-auth' {
       id: string;
       email: string;
       name: string;
-      image?: string;
+      image?: string | null;
+      provider?: 'credentials' | 'google';
+      createdAt?: string;
     };
   }
 
@@ -14,13 +16,16 @@ declare module 'next-auth' {
     id: string;
     email: string;
     name: string;
-    image?: string;
+    image?: string | null;
+    provider?: 'credentials' | 'google';
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
+    provider?: 'credentials' | 'google';
+    picture?: string | null;
   }
 }
 

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
@@ -15,13 +14,16 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { language = 'es' } = (await request.json()) as PlanRequestPayload;
+    const data = (await request.json()) as Partial<EventUpdatePayload>;
+    const updates: Record<string, unknown> = { ...data };
+    const body: (await request.json()) as Partial<PlanRequestPayload>;
+    const language = typeof body.language === 'string' ? body.language : 'es';
 
     await connectDB();
 
@@ -71,10 +73,7 @@ export async function POST(
   } catch (error: unknown) {
     console.error('Error generating plan:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
@@ -22,9 +21,26 @@ const redactEvent = (event: unknown) => {
   return plain;
 };
 
+type SpendingStyle = 'value' | 'balanced' | 'premium';
+
+type CreateEventPayload = {
+  name?: string;
+  eventType?: string;
+  numberOfGuests?: number;
+  ageRange?: string;
+  genderDistribution?: string;
+  location?: string;
+  eventDate?: string;
+  budget?: number | string;
+  preferences?: string;
+  spendingStyle?: SpendingStyle | string;
+  currency?: string;
+  [key: string]: unknown;
+};
+
 export async function GET() {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -47,25 +63,17 @@ export async function GET() {
   }
 }
 
-type CreateEventPayload = {
-  name?: string;
-  eventDate?: string;
-  spendingStyle?: 'value' | 'balanced' | 'premium';
-  location?: string;
-  currency?: string;
-  budget?: number | string;
-  [key: string]: unknown;
-};
+
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = (await request.json()) as CreateEventPayload;
+    const data = (await request.json()) as Partial<CreateEventPayload>;
 
     const name = sanitizeText(data.name, { maxLength: EVENT_NAME_LIMIT });
     if (!name) {
@@ -91,8 +99,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Event date is required' }, { status: 400 });
     }
 
-    const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
-    type SpendingStyle = (typeof allowedSpendingStyles)[number];
+    const allowedSpendingStyles: SpendingStyle[] = ['value', 'balanced', 'premium'];
     const spendingStyle =
       typeof data.spendingStyle === 'string' && allowedSpendingStyles.includes(data.spendingStyle as SpendingStyle)
         ? (data.spendingStyle as SpendingStyle)
@@ -124,14 +131,11 @@ export async function POST(request: Request) {
       userId: session.user.id,
     });
 
-    return NextResponse.json(redactEvent(event), { status: 201 });
+    return NextResponse.json(event, { status: 201 });
   } catch (error: unknown) {
     console.error('Error creating event:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

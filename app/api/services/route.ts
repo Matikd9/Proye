@@ -47,6 +47,15 @@ const redactService = (service: unknown) => {
   return plain;
 };
 
+interface ServicePayload {
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  userId?: string;
+  [key: string]: unknown;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

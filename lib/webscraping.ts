@@ -49,7 +49,7 @@ export async function scrapeEventServices(
       },
     ];
 
-    const normalizedCategory = category.toLowerCase();
+    const normalizedCategory = category.trim().toLowerCase();
     const normalizedLocation = location.trim();
 
     return exampleServices

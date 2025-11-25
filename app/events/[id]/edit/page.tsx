@@ -62,7 +62,7 @@ export default function EditEventPage() {
         router.push('/my-events');
       }
     } catch (error) {
-      console.error('Failed to load event', error);
+      console.error('Error fetching event:', error);
       router.push('/my-events');
     } finally {
       setLoadingEvent(false);
@@ -101,7 +101,7 @@ export default function EditEventPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Failed to update event', error);
+      console.error('Error saving event:', error);
       alert(t('common.error', locale));
     } finally {
       setSaving(false);

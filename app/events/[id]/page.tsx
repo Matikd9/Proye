@@ -82,7 +82,7 @@ export default function EventDetailPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Error generating plan', error);
+      console.error('Error generating plan:', error);
       alert(t('common.error', locale));
     } finally {
       setPlanning(false);
@@ -110,7 +110,7 @@ export default function EventDetailPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Error deleting event', error);
+      console.error('Error deleting event:', error);
       alert(t('common.error', locale));
     } finally {
       setDeleting(false);

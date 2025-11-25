@@ -66,7 +66,7 @@ function CreateEventForm() {
         alert(t('common.error', locale));
       }
     } catch (error) {
-      console.error('Error creating event', error);
+      console.error('Error creating event:', error);
       alert(t('common.error', locale));
     } finally {
       setLoading(false);

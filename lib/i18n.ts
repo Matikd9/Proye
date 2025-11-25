@@ -16,8 +16,13 @@ export function getTranslation(key: string, locale: Locale = 'es'): string {
   let value: TranslationNode = translations[locale];
 
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = (value as TranslationMap)[k];
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      Object.prototype.hasOwnProperty.call(value, k)
+    ) {
+      value = (value as Record<string, TranslationNode>)[k];
     } else {
       return key; // Return key if translation not found
     }

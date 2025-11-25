@@ -117,6 +117,7 @@ const sanitizeUpdatePayload = (data: ServicePayload) => {
   return update;
 };
 
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { id: string } }
@@ -194,10 +195,7 @@ export async function DELETE(
   } catch (error: unknown) {
     console.error('Error deleting service:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

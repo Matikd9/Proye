@@ -92,6 +92,17 @@ type RawPlanItem = {
   notes?: unknown;
 };
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/`+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function normalizePlan(rawPlan: unknown): EventPlan {
   const plan = (rawPlan ?? {}) as RawPlan;
 
@@ -102,16 +113,63 @@ function normalizePlan(rawPlan: unknown): EventPlan {
 
     return recommendations.map((entry, idx) => {
       if (typeof entry === 'string') {
-        return entry;
+        return stripMarkdown(entry);
       }
 
       if (entry && typeof entry === 'object') {
-        const item = entry as { title?: unknown; argument?: unknown };
+        const item = entry as {
+          title?: unknown;
+          argument?: unknown;
+          description?: unknown;
+          detail?: unknown;
+          details?: unknown;
+          text?: unknown;
+          content?: unknown;
+          reason?: unknown;
+          note?: unknown;
+          items?: unknown;
+        };
         const title = typeof item.title === 'string' && item.title.trim().length > 0
-          ? item.title.trim()
+          ? stripMarkdown(item.title)
           : `Recomendación ${idx + 1}`;
-        const argument = typeof item.argument === 'string' ? item.argument.trim() : '';
-        return argument ? `${title}: ${argument}` : title;
+        const candidates = [
+          item.argument,
+          item.description,
+          item.detail,
+          item.details,
+          item.text,
+          item.content,
+          item.reason,
+          item.note,
+        ];
+
+        let argument = candidates.find((value) => typeof value === 'string' && value.trim().length > 0);
+
+        if (!argument && Array.isArray(item.items)) {
+          argument = item.items
+            .map((subEntry) => {
+              if (typeof subEntry === 'string') {
+                return subEntry.trim();
+              }
+              if (subEntry && typeof subEntry === 'object') {
+                const subItem = subEntry as { title?: unknown; detail?: unknown; description?: unknown };
+                const subTitle = typeof subItem.title === 'string' ? subItem.title.trim() : '';
+                const subDetail =
+                  typeof subItem.detail === 'string'
+                    ? subItem.detail.trim()
+                    : typeof subItem.description === 'string'
+                      ? subItem.description.trim()
+                      : '';
+                return subDetail ? `${subTitle ? `${subTitle}: ` : ''}${subDetail}` : subTitle;
+              }
+              return '';
+            })
+            .filter((text) => text && text.length > 0)
+            .join(' | ');
+        }
+
+        const normalizedArgument = typeof argument === 'string' ? stripMarkdown(argument) : '';
+        return normalizedArgument ? `${title}: ${normalizedArgument}` : title;
       }
 
       return `Recomendación ${idx + 1}`;

@@ -172,44 +172,19 @@
   },
   "services": {
     "title": "Services",
-    "addService": "Add Service",
-    "serviceName": "Service Name",
-    "category": "Category",
-    "price": "Price",
-    "description": "Description",
-    "provider": "Provider",
-    "emptyState": "No services found",
     "catalogTitle": "Curated Service Marketplace",
-    "catalogSubtitle": "Trusted providers and pop-up teams aligned with responsible consumption.",
-    "catalogListTitle": "All curated services",
-    "featuredTitle": "Recommended this week",
-    "priceRange": "Price range",
-    "coverage": "Coverage",
-    "highlights": "What you get",
-    "contactHandle": "Contact",
-    "heroStats": {
-      "curated": "10 ready-to-book services",
-      "localVendors": "80% local vendors",
-      "sdgAlignment": "Aligned with SDGs 8 & 12"
-    },
+    "catalogSubtitle": "Find real vendors by region and contact them directly.",
     "filters": {
-      "searchPlaceholder": "Search by provider, service, or keyword",
-      "categoryLabel": "Filter by category",
-      "areaLabel": "Filter by coverage area",
-      "budgetAll": "Any budget",
-      "budgetLean": "Budget-conscious",
-      "budgetStandard": "Balanced budget",
-      "budgetPremium": "Premium budget",
-      "tagLabel": "Filter by focus"
-    },
-    "tags": {
-      "local": "Local",
-      "eco": "Eco",
-      "premium": "Premium",
-      "express": "Express"
+      "searchPlaceholder": "Search provider, service, or keyword",
+      "categoryLabel": "All categories",
+      "regionLabel": "Select your region",
+      "regionAll": "All regions",
+      "cityLabel": "Filter by City/Commune",
+      "cityAll": "All cities/communes"
     },
     "actions": {
-      "addToPlan": "Use in my event"
+      "findRealServices": "Find real services",
+      "openContact": "Open contact"
     },
     "categories": {
       "catering": "Catering",
@@ -218,6 +193,27 @@
       "music": "Music",
       "venue": "Venue",
       "other": "Other"
+    },
+    "live": {
+      "title": "Real services near you",
+      "subtitle": "We surface vendors stored in your local seed dataset.",
+      "searchHint": "Pick a region and city to start the search.",
+      "searchSummary": "Ready to search in {{location}}",
+      "lastUpdate": "Showing results for {{location}}"
+    },
+    "messages": {
+      "genericError": "We couldn’t fetch services right now. Please try again in a moment.",
+      "promptSearch": "Pick a region, add a city, and hit \"Find real services\" to see verified Chilean vendors.",
+      "noResults": "No providers matched those filters in {{location}}. Try another city or category.",
+      "loading": "Looking up the providers stored in your catalog...",
+      "regionRequired": "Choose a region or use \"All regions\" before running the search."
+    },
+    "labels": {
+      "location": "Location",
+      "locationUnknown": "Location to be confirmed",
+      "startingAt": "Starting at",
+      "askForQuote": "Request your custom quote",
+      "phone": "Phone"
     }
   },
   "myEventsPage": {

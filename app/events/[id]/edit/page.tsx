@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FullPageLoader } from '@/components/FullPageLoader';
 
 interface EventFormData {
   name: string;
@@ -108,11 +109,7 @@ export default function EditEventPage() {
   };
 
   if (status === 'loading' || loadingEvent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        {t('common.loading', locale)}
-      </div>
-    );
+    return <FullPageLoader />;
   }
 
   if (!session) {

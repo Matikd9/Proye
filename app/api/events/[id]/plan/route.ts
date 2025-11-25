@@ -5,9 +5,9 @@ import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import { generateEventPlan } from '@/lib/gemini';
 
-interface PlanRequestPayload {
+type PlanRequestPayload = {
   language?: string;
-}
+};
 
 export async function POST(
   request: NextRequest,
@@ -20,7 +20,9 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body: PlanRequestPayload = await request.json();
+    const data = (await request.json()) as Partial<EventUpdatePayload>;
+    const updates: Record<string, unknown> = { ...data };
+    const body: (await request.json()) as Partial<PlanRequestPayload>;
     const language = typeof body.language === 'string' ? body.language : 'es';
 
     await connectDB();

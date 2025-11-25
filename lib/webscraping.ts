@@ -58,7 +58,7 @@ export async function scrapeEventServices(
         ...service,
         provider: `${service.provider} · ${normalizedLocation}`,
       }));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error scraping services:', error);
     return [];
   }
@@ -97,7 +97,7 @@ export async function scrapeProductPrices(url: string): Promise<number | null> {
     }
 
     return null;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error scraping product price:', error);
     return null;
   }

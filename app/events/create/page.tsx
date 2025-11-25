@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
+import { FullPageLoader } from '@/components/FullPageLoader';
 
 function CreateEventForm() {
   const { status } = useSession();
@@ -35,7 +36,7 @@ function CreateEventForm() {
   });
 
   if (status === 'loading') {
-    return <div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>;
+    return <FullPageLoader />;
   }
 
   if (status === 'unauthenticated') {
@@ -255,9 +256,8 @@ function CreateEventForm() {
 }
 
 export default function CreateEventPage() {
-  const { locale } = useLanguage();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>}>
+    <Suspense fallback={<FullPageLoader />}>
       <CreateEventForm />
     </Suspense>
   );

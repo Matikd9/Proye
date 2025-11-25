@@ -4,9 +4,9 @@ import authConfig from '../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 
-interface BulkDeletePayload {
-  ids?: string[];
-}
+type BulkDeletePayload = {
+  ids: string[];
+};
 
 export async function POST(request: NextRequest) {
   try {

@@ -3,7 +3,8 @@ import en from '@/locales/en.json';
 
 export type Locale = 'es' | 'en';
 
-type TranslationNode = string | { [key: string]: TranslationNode };
+type TranslationNode = string | TranslationMap;
+type TranslationMap = { [key: string]: TranslationNode };
 
 const translations: Record<Locale, TranslationNode> = {
   es,
@@ -30,7 +31,19 @@ export function getTranslation(key: string, locale: Locale = 'es'): string {
   return typeof value === 'string' ? value : key;
 }
 
-export function t(key: string, locale: Locale = 'es'): string {
-  return getTranslation(key, locale);
+function applyReplacements(value: string, replacements?: Record<string, string | number>): string {
+  if (!replacements) {
+    return value;
+  }
+
+  return Object.entries(replacements).reduce((acc, [placeholder, replacement]) => {
+    const token = `{{${placeholder}}}`;
+    return acc.split(token).join(String(replacement));
+  }, value);
+}
+
+export function t(key: string, locale: Locale = 'es', replacements?: Record<string, string | number>): string {
+  const value = getTranslation(key, locale);
+  return applyReplacements(value, replacements);
 }
 

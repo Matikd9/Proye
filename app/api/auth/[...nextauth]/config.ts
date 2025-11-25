@@ -1,6 +1,6 @@
-import type { NextAuthOptions, Profile, Session, User as NextAuthUser } from 'next-auth';
+import type { NextAuthOptions, Session } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
-import GoogleProvider from 'next-auth/providers/google';
+import GoogleProvider, { type GoogleProfile } from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
@@ -62,15 +62,13 @@ const authConfig: NextAuthOptions = {
         await connectDB();
 
         const existingUser = await User.findOne({ email: user.email });
-        const profileData = profile as (Profile & { picture?: string | null; name?: string | null }) | null;
-        const profileName = profileData?.name || 'User';
-        const profileImage = sanitizeImage(user.image || profileData?.picture);
+        const googleProfile = profile as GoogleProfile | undefined;
 
         if (!existingUser) {
           const newUser = await User.create({
             email: user.email,
-            name: user.name || profileName,
-            image: profileImage,
+            name: user.name || googleProfile?.name || 'User',
+            image: sanitizeImage(user.image || googleProfile?.picture),
             provider: 'google',
             providerId: account.providerAccountId,
           });
@@ -91,14 +89,22 @@ const authConfig: NextAuthOptions = {
     async session({ session, token }) {
       const typedToken = token as JWT & { provider?: ProviderType };
       if (session.user) {
-        if (typeof typedToken.id === 'string') {
-          session.user.id = typedToken.id;
+        type SessionUserWithId = Session['user'] & { id?: string };
+        type TokenWithId = JWT & { id?: string };
+        const sessionUser = session.user as SessionUserWithId;
+        const typedToken = token as TokenWithId;
+
+        if (typedToken.id) {
+          sessionUser.id = typedToken.id;
         }
         if (typeof typedToken.name === 'string') {
           session.user.name = typedToken.name;
         }
         if (typeof typedToken.email === 'string') {
           session.user.email = typedToken.email;
+        }
+        if (typeof typedToken.picture === 'string' || typeof typedToken.picture === 'undefined') {
+          session.user.image = typedToken.picture as string | undefined;
         }
         session.user.image = typeof typedToken.picture === 'string' ? typedToken.picture : session.user.image;
         session.user.provider = typedToken.provider;

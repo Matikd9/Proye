@@ -1,12 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authConfig from '../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
+import { sanitizeOptionalText, sanitizeText } from '@/lib/sanitize';
+
+const EVENT_NAME_LIMIT = 120;
+const LOCATION_LIMIT = 160;
+const PREF_LIMIT = 1500;
+
+const redactEvent = (event: unknown) => {
+  if (!event) return event;
+  const plain = typeof event === 'object' && event !== null && 'toObject' in event
+    ? (event as { toObject: () => Record<string, unknown> }).toObject()
+    : event;
+  if (plain && typeof plain === 'object') {
+    delete (plain as Record<string, unknown>).userId;
+    delete (plain as Record<string, unknown>).__v;
+  }
+  return plain;
+};
 
 type SpendingStyle = 'value' | 'balanced' | 'premium';
 
-interface EventPayload {
+type CreateEventPayload = {
   name?: string;
   eventType?: string;
   numberOfGuests?: number;
@@ -18,7 +35,8 @@ interface EventPayload {
   preferences?: string;
   spendingStyle?: SpendingStyle | string;
   currency?: string;
-}
+  [key: string]: unknown;
+};
 
 export async function GET() {
   try {
@@ -30,17 +48,24 @@ export async function GET() {
 
     await connectDB();
 
-    const events = await Event.find({ userId: session.user.id }).sort({ createdAt: -1 });
+    const events = await Event.find({ userId: session.user.id })
+      .sort({ createdAt: -1 })
+      .select('-userId -__v');
 
-    return NextResponse.json(events);
+    return NextResponse.json(events.map((event) => redactEvent(event)));
   } catch (error: unknown) {
     console.error('Error fetching events:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(request: NextRequest) {
+
+
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authConfig);
 
@@ -48,10 +73,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data: EventPayload = await request.json();
+    const data = (await request.json()) as Partial<CreateEventPayload>;
 
-    const name = typeof data.name === 'string' ? data.name.trim() : '';
-
+    const name = sanitizeText(data.name, { maxLength: EVENT_NAME_LIMIT });
     if (!name) {
       return NextResponse.json({ error: 'Event name is required' }, { status: 400 });
     }
@@ -59,7 +83,7 @@ export async function POST(request: NextRequest) {
     const rawBudget =
       typeof data.budget === 'number'
         ? data.budget
-        : data.budget
+        : typeof data.budget === 'string'
           ? Number(data.budget)
           : undefined;
 
@@ -81,15 +105,22 @@ export async function POST(request: NextRequest) {
         ? (data.spendingStyle as SpendingStyle)
         : 'balanced';
 
+    const location = sanitizeText(data.location ?? 'Santiago, Chile', {
+      maxLength: LOCATION_LIMIT,
+      allowEmpty: true,
+      fallback: 'Santiago, Chile',
+    }) || 'Santiago, Chile';
+    const currency = typeof data.currency === 'string' ? data.currency.toUpperCase() : 'CLP';
+    const preferences = sanitizeOptionalText(data.preferences, { maxLength: PREF_LIMIT });
+
     const payload = {
       ...data,
       name,
       eventDate,
       spendingStyle,
-      location: typeof data.location === 'string' && data.location.trim().length > 0
-        ? data.location.trim()
-        : 'Santiago, Chile',
-      currency: (data.currency || 'CLP').toString().toUpperCase(),
+      location,
+      currency,
+      preferences,
       budget: Number.isFinite(rawBudget) ? rawBudget : undefined,
     };
 

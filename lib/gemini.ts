@@ -103,18 +103,50 @@ function describeSeason(date: Date, language: string) {
   return labels[language === 'es' ? 'es' : 'en'][season];
 }
 
-function normalizePlan(rawPlan: RawPlan): EventPlan {
+type RawPlan = {
+  suggestions?: unknown;
+  estimatedCost?: unknown;
+  breakdown?: unknown;
+  recommendations?: unknown;
+};
+
+type RawPlanCategory = {
+  category?: unknown;
+  items?: unknown;
+  estimatedCost?: unknown;
+};
+
+type RawPlanItem = {
+  name?: unknown;
+  price?: unknown;
+  source?: unknown;
+  notes?: unknown;
+};
+
+function normalizePlan(rawPlan: unknown): EventPlan {
+  const plan = (rawPlan ?? {}) as RawPlan;
+  
+  type RawRecommendation =
+  | string
+  | {
+      title?: string;
+      argument?: string;
+    }
+  | null
+  | undefined;
+  
   const normalizeRecommendations = (recommendations: unknown): string[] => {
     if (!Array.isArray(recommendations)) {
       return [];
     }
 
     return recommendations.map((item: RawRecommendation, idx: number) => {
-      if (typeof item === 'string') {
-        return item;
+      if (typeof entry === 'string') {
+        return entry;
       }
 
-      if (item && typeof item === 'object') {
+      if (entry && typeof entry === 'object') {
+        const item = entry as { title?: unknown; argument?: unknown };
         const title = typeof item.title === 'string' && item.title.trim().length > 0
           ? item.title.trim()
           : `Recomendación ${idx + 1}`;
@@ -126,36 +158,52 @@ function normalizePlan(rawPlan: RawPlan): EventPlan {
     });
   };
 
-  return {
-    suggestions: Array.isArray(rawPlan?.suggestions) ? rawPlan.suggestions : [],
-    estimatedCost: typeof rawPlan?.estimatedCost === 'number' ? rawPlan.estimatedCost : 0,
-    breakdown: Array.isArray(rawPlan?.breakdown)
-      ? (rawPlan.breakdown as RawBreakdownCategory[]).map((category) => {
-          const itemsArray = Array.isArray(category?.items) ? category.items : [];
-          const normalizedItems = itemsArray.map((item: NormalizedItemSource, idx: number) => {
-            if (typeof item === 'string') {
-              return {
-                name: item,
-                price: Math.round(((category?.estimatedCost || 0) / Math.max(itemsArray.length, 1)) / 1000) * 1000,
-                source: 'Referencia local',
-              };
-            }
-            return {
-              name: item?.name || `Item ${idx + 1}`,
-              price: typeof item?.price === 'number' ? item.price : 0,
-              source: item?.source || 'Referencia local',
-              notes: item?.notes,
-            };
-          });
+  const parseBreakdown = (breakdown: unknown) => {
+    if (!Array.isArray(breakdown)) {
+      return [] as EventPlan['breakdown'];
+    }
 
+    return breakdown.map((categoryEntry) => {
+      const category = (categoryEntry ?? {}) as RawPlanCategory;
+      const itemsArray = Array.isArray(category.items) ? category.items : [];
+      const estimatedCategoryCost = typeof category.estimatedCost === 'number' ? category.estimatedCost : 0;
+
+      const normalizedItems = itemsArray.map((itemEntry, idx) => {
+        if (typeof itemEntry === 'string') {
+          const unitCost = Math.round((estimatedCategoryCost / Math.max(itemsArray.length, 1)) / 1000) * 1000;
           return {
-            category: category?.category || 'General',
-            items: normalizedItems,
-            estimatedCost: typeof category?.estimatedCost === 'number' ? category.estimatedCost : 0,
+            name: itemEntry,
+            price: Number.isFinite(unitCost) ? unitCost : 0,
+            source: 'Referencia local',
           };
-        })
+        }
+
+        const item = (itemEntry ?? {}) as RawPlanItem;
+        return {
+          name: typeof item.name === 'string' && item.name.trim().length > 0 ? item.name : `Item ${idx + 1}`,
+          price: typeof item.price === 'number' ? item.price : 0,
+          source: typeof item.source === 'string' && item.source.trim().length > 0 ? item.source : 'Referencia local',
+          notes: typeof item.notes === 'string' && item.notes.trim().length > 0 ? item.notes : undefined,
+        };
+      });
+
+      return {
+        category: typeof category.category === 'string' && category.category.trim().length > 0
+          ? category.category
+          : 'General',
+        items: normalizedItems,
+        estimatedCost: estimatedCategoryCost,
+      };
+    });
+  };
+
+  return {
+    suggestions: Array.isArray(plan.suggestions)
+      ? plan.suggestions.filter((item): item is string => typeof item === 'string')
       : [],
-    recommendations: normalizeRecommendations(rawPlan?.recommendations),
+    estimatedCost: typeof plan.estimatedCost === 'number' ? plan.estimatedCost : 0,
+    breakdown: parseBreakdown(plan.breakdown),
+    recommendations: normalizeRecommendations(plan.recommendations),
   };
 }
 

@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node scripts/seed-services.ts"
+    "seed": "ts-node --project tsconfig.seed.json scripts/seed-services.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",

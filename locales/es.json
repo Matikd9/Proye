@@ -18,6 +18,20 @@
     "success": "Éxito",
     "networkError": "Tuvimos un problema, intenta nuevamente."
   },
+  "errorPage": {
+    "badge": "Algo salió mal",
+    "title": "Tuvimos un inconveniente",
+    "description": "Ya registramos el error. Puedes reintentar la vista o volver al inicio.",
+    "ctaRetry": "Reintentar",
+    "ctaHome": "Ir al inicio",
+    "footer": "Si persiste, contáctanos para ayudarte."
+  },
+  "loading": {
+    "fullPage": {
+      "title": "Cargando, un momento...",
+      "description": "Estamos preparando tus datos."
+    }
+  },
   "nav": {
     "home": "Inicio",
     "events": "Eventos",
@@ -114,6 +128,11 @@
       "balanced": "Balanceado"
     },
     "planEvent": "Planificar Evento con IA",
+    "loading": {
+      "badge": "Cargando eventos",
+      "title": "Preparando inspiración curada",
+      "description": "Estamos cargando plantillas recomendadas y tus próximos eventos."
+    },
     "estimatedCost": "Costo Estimado",
     "suggestions": "Sugerencias",
     "recommendations": "Recomendaciones",
@@ -153,44 +172,19 @@
   },
   "services": {
     "title": "Servicios",
-    "addService": "Agregar Servicio",
-    "serviceName": "Nombre del Servicio",
-    "category": "Categoría",
-    "price": "Precio",
-    "description": "Descripción",
-    "provider": "Proveedor",
-    "emptyState": "No se encontraron servicios",
     "catalogTitle": "Marketplace curado de servicios",
-    "catalogSubtitle": "Proveedores confiables alineados con consumo responsable y economía local.",
-    "catalogListTitle": "Catálogo completo",
-    "featuredTitle": "Recomendados de la semana",
-    "priceRange": "Rango de precio",
-    "coverage": "Cobertura",
-    "highlights": "Incluye",
-    "contactHandle": "Contacto",
-    "heroStats": {
-      "curated": "10 servicios listos para reservar",
-      "localVendors": "80% proveedores locales",
-      "sdgAlignment": "Alineados con ODS 8 y 12"
-    },
+    "catalogSubtitle": "Detecta proveedores reales por región y contáctalos directo.",
     "filters": {
       "searchPlaceholder": "Busca por proveedor, servicio o palabra clave",
-      "categoryLabel": "Filtrar por categoría",
-      "areaLabel": "Filtrar por cobertura",
-      "budgetAll": "Cualquier presupuesto",
-      "budgetLean": "Presupuesto acotado",
-      "budgetStandard": "Presupuesto balanceado",
-      "budgetPremium": "Presupuesto premium",
-      "tagLabel": "Filtrar por enfoque"
-    },
-    "tags": {
-      "local": "Local",
-      "eco": "Eco",
-      "premium": "Premium",
-      "express": "Express"
+      "categoryLabel": "Todas las categorías",
+      "regionLabel": "Selecciona tu región",
+      "regionAll": "Todas las regiones",
+      "cityLabel": "Filtrar por Ciudad/Comuna",
+      "cityAll": "Todas las ciudades/comunas"
     },
     "actions": {
-      "addToPlan": "Usar en mi evento"
+      "findRealServices": "Buscar servicios reales",
+      "openContact": "Abrir contacto"
     },
     "categories": {
       "catering": "Catering",
@@ -199,6 +193,34 @@
       "music": "Música",
       "venue": "Lugar",
       "other": "Otro"
+    },
+    "live": {
+      "title": "Servicios reales cerca de ti",
+      "subtitle": "Mostramos proveedores verificados desde tu semilla local.",
+      "searchHint": "Selecciona una región y ciudad para comenzar la búsqueda.",
+      "searchSummary": "Listo para buscar en {{location}}",
+      "lastUpdate": "Resultados actualizados para {{location}}"
+    },
+    "messages": {
+      "genericError": "No pudimos traer servicios ahora. Inténtalo nuevamente en unos segundos.",
+      "promptSearch": "Selecciona una región, ingresa una ciudad y presiona \"Buscar servicios reales\" para ver proveedores verificados en Chile.",
+      "noResults": "No encontramos proveedores con esos filtros en {{location}}. Prueba con otra ciudad o categoría.",
+      "loading": "Buscando proveedores cargados en tu catálogo...",
+      "regionRequired": "Selecciona una región o usa \"Todas las regiones\" antes de buscar."
+    },
+    "labels": {
+      "location": "Ubicación",
+      "locationUnknown": "Ubicación por confirmar",
+      "startingAt": "Desde",
+      "askForQuote": "Consulta por tu cotización",
+      "phone": "Teléfono"
+    }
+  },
+  "myEventsPage": {
+    "loading": {
+      "badge": "Cargando tus eventos",
+      "title": "Sincronizando tus planes",
+      "description": "Un momento mientras recuperamos tus eventos guardados y últimos presupuestos."
     }
   },
   "ods": {

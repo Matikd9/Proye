@@ -7,9 +7,12 @@ export interface IService extends Document {
   description?: string;
   provider: string;
   providerId?: mongoose.Types.ObjectId; // If provider is a registered user
+  region: string;
+  city?: string;
   contactEmail?: string;
   contactPhone?: string;
   imageUrl?: string;
+  contactUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +44,13 @@ const ServiceSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    region: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+    },
     contactEmail: {
       type: String,
     },
@@ -48,6 +58,9 @@ const ServiceSchema: Schema = new Schema(
       type: String,
     },
     imageUrl: {
+      type: String,
+    },
+    contactUrl: {
       type: String,
     },
   },

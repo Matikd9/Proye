@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 import { Sparkles, DollarSign, CheckCircle, Trash2, Edit2 } from 'lucide-react';
+import { FullPageLoader } from '@/components/FullPageLoader';
 
 interface Event {
   _id: string;
@@ -38,7 +39,8 @@ interface Event {
 
 export default function EventDetailPage() {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams<{ id: string }>();
+  const eventId = params?.id;
   const { locale } = useLanguage();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,8 +48,9 @@ export default function EventDetailPage() {
   const [deleting, setDeleting] = useState(false);
 
   const fetchEvent = useCallback(async () => {
+    if (!eventId) return;
     try {
-      const response = await fetch(`/api/events/${params.id}`);
+      const response = await fetch(`/api/events/${eventId}`);
       if (response.ok) {
         const data = await response.json();
         setEvent(data);
@@ -57,18 +60,16 @@ export default function EventDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [eventId]);
 
   useEffect(() => {
-    if (params.id) {
-      fetchEvent();
-    }
-  }, [params.id, fetchEvent]);
+    fetchEvent();
+  }, [fetchEvent]);
 
   const handlePlanWithAI = async () => {
     setPlanning(true);
     try {
-      const response = await fetch(`/api/events/${params.id}/plan`, {
+      const response = await fetch(`/api/events/${eventId}/plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language: locale }),
@@ -89,17 +90,17 @@ export default function EventDetailPage() {
   };
 
   const handleEditEvent = () => {
-    if (!params.id) return;
-    router.push(`/events/${params.id}/edit`);
+    if (!eventId) return;
+    router.push(`/events/${eventId}/edit`);
   };
 
   const handleDeleteEvent = async () => {
-    if (!params.id) return;
+    if (!eventId) return;
     if (!window.confirm(t('events.deleteSingleConfirm', locale))) return;
 
     setDeleting(true);
     try {
-      const response = await fetch(`/api/events/${params.id}`, {
+      const response = await fetch(`/api/events/${eventId}`, {
         method: 'DELETE',
       });
 
@@ -117,7 +118,7 @@ export default function EventDetailPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">{t('common.loading', locale)}</div>;
+    return <FullPageLoader />;
   }
 
   if (!event) {

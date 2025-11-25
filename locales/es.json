@@ -223,6 +223,48 @@
       "description": "Un momento mientras recuperamos tus eventos guardados y últimos presupuestos."
     }
   },
+  "profile": {
+    "view": {
+      "badge": "Tu perfil",
+      "editButton": "Editar perfil",
+      "backHome": "Volver al inicio",
+      "openProfile": "Ver perfil",
+      "providerLabel": "Proveedor de autenticación",
+      "providerGoogle": "Google",
+      "providerCredentials": "Email y contraseña",
+      "providerDescGoogle": "Iniciaste sesión con Google. Gestiona foto y contraseña desde tu cuenta de Google.",
+      "providerDescCredentials": "Puedes actualizar tu foto y contraseña directamente aquí.",
+      "memberSince": "Miembro desde",
+      "lastUpdate": "Última actualización: {{date}}"
+    },
+    "edit": {
+      "badge": "Editar perfil",
+      "title": "Personaliza tu cuenta",
+      "subtitle": "Actualiza tu información básica, tu foto y tu contraseña.",
+      "basicInfoTitle": "Información básica",
+      "basicInfoSubtitle": "Actualiza tu nombre y revisa tu correo asociado.",
+      "nameLabel": "Nombre completo",
+      "emailLabel": "Correo electrónico",
+      "photoTitle": "Foto de perfil",
+      "photoHintCredentials": "Puedes subir una imagen cuadrada y liviana para personalizar tu perfil.",
+      "photoHintGoogle": "Las cuentas de Google toman la foto directamente desde tu perfil de Google.",
+      "photoUpload": "Subir imagen",
+      "photoRemove": "Quitar imagen",
+      "passwordTitle": "Cambio de contraseña",
+      "passwordSubtitle": "Ingresa tu contraseña actual y define una nueva si deseas actualizarla.",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirma la nueva contraseña",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando…"
+    },
+    "messages": {
+      "imageTooLarge": "La imagen debe pesar menos de 2MB.",
+      "updateSuccess": "Perfil actualizado correctamente.",
+      "unknownError": "Error desconocido"
+    }
+  },
   "ods": {
     "title": "Objetivos de Desarrollo Sostenible",
     "description": "Este proyecto está alineado con los ODS 8 y 12 de las Naciones Unidas",

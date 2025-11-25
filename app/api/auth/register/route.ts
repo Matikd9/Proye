@@ -3,9 +3,18 @@ import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { hashPassword } from '@/lib/auth';
 
+interface RegisterRequestBody {
+  email?: string;
+  password?: string;
+  name?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name } = await request.json();
+    const body: RegisterRequestBody = await request.json();
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
 
     if (!email || !password || !name) {
       return NextResponse.json(
@@ -45,12 +54,10 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

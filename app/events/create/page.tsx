@@ -7,7 +7,7 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
 
 function CreateEventForm() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { locale } = useLanguage();
@@ -65,6 +65,7 @@ function CreateEventForm() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Error creating event:', error);
       alert(t('common.error', locale));
     } finally {
       setLoading(false);

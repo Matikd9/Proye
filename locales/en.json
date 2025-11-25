@@ -206,6 +206,32 @@
     "description": "This project is aligned with UN SDGs 8 and 12",
     "ods8": "SDG 8: Decent work and economic growth",
     "ods12": "SDG 12: Responsible consumption and production"
+  },
+  "profile": {
+    "editProfile": "Edit Profile",
+    "backToProfile": "Back to Profile",
+    "accountInformation": "Account Information",
+    "username": "Username",
+    "memberSince": "Member since",
+    "googleAccount": "Google Account",
+    "profilePicture": "Profile Picture",
+    "uploadImage": "Upload Image",
+    "removeImage": "Remove Image",
+    "emailCannotBeChanged": "Email cannot be changed",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "googleImageInfo": "Google account profile images cannot be modified from here",
+    "googlePasswordInfo": "Google account passwords are managed through Google",
+    "profileUpdated": "Profile updated successfully",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "imageTooLarge": "Image is too large. Maximum 5MB",
+    "invalidImageType": "Invalid image type",
+    "cannotDeleteGoogleImage": "Cannot delete image for Google accounts",
+    "required": "Required",
+    "optional": "Optional"
   }
 }
 

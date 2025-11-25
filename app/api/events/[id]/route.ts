@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
@@ -8,12 +7,22 @@ import Event from '@/models/Event';
 const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
 type SpendingStyle = (typeof allowedSpendingStyles)[number];
 
+interface EventUpdatePayload {
+  name?: string;
+  location?: string;
+  currency?: string;
+  budget?: number | string;
+  spendingStyle?: string;
+  eventDate?: string;
+  [key: string]: unknown;
+}
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -31,12 +40,10 @@ export async function GET(
     }
 
     return NextResponse.json(event);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching event:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -45,14 +52,14 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await request.json();
-    const updates: Record<string, any> = { ...data };
+    const data: EventUpdatePayload = await request.json();
+    const updates: Record<string, unknown> = { ...data };
 
     if (typeof data.name === 'string') {
       const trimmed = data.name.trim();
@@ -106,21 +113,19 @@ export async function PUT(
     }
 
     return NextResponse.json(event);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating event:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -138,12 +143,10 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: 'Event deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting event:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

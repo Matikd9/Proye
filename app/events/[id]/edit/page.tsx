@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -40,18 +40,7 @@ export default function EditEventPage() {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-      return;
-    }
-
-    if (status === 'authenticated' && eventId) {
-      fetchEvent();
-    }
-  }, [status, eventId, router]);
-
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const response = await fetch(`/api/events/${eventId}`);
       if (response.ok) {
@@ -72,11 +61,23 @@ export default function EditEventPage() {
         router.push('/my-events');
       }
     } catch (error) {
+      console.error('Error fetching event:', error);
       router.push('/my-events');
     } finally {
       setLoadingEvent(false);
     }
-  };
+  }, [eventId, router]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
+    }
+
+    if (status === 'authenticated' && eventId) {
+      fetchEvent();
+    }
+  }, [status, eventId, router, fetchEvent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +100,7 @@ export default function EditEventPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Error saving event:', error);
       alert(t('common.error', locale));
     } finally {
       setSaving(false);

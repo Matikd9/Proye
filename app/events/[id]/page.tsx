@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { t } from '@/lib/i18n';
@@ -38,7 +37,6 @@ interface Event {
 }
 
 export default function EventDetailPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const params = useParams();
   const { locale } = useLanguage();
@@ -47,13 +45,7 @@ export default function EventDetailPage() {
   const [planning, setPlanning] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    if (params.id) {
-      fetchEvent();
-    }
-  }, [params.id]);
-
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const response = await fetch(`/api/events/${params.id}`);
       if (response.ok) {
@@ -65,7 +57,13 @@ export default function EventDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (params.id) {
+      fetchEvent();
+    }
+  }, [params.id, fetchEvent]);
 
   const handlePlanWithAI = async () => {
     setPlanning(true);
@@ -77,12 +75,13 @@ export default function EventDetailPage() {
       });
 
       if (response.ok) {
-        const plan = await response.json();
-        await fetchEvent(); // Refresh event data
+        await response.json();
+        await fetchEvent();
       } else {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Error generating plan:', error);
       alert(t('common.error', locale));
     } finally {
       setPlanning(false);
@@ -110,6 +109,7 @@ export default function EventDetailPage() {
         alert(t('common.error', locale));
       }
     } catch (error) {
+      console.error('Error deleting event:', error);
       alert(t('common.error', locale));
     } finally {
       setDeleting(false);

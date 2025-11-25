@@ -1,23 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import { generateEventPlan } from '@/lib/gemini';
+
+interface PlanRequestPayload {
+  language?: string;
+}
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { language = 'es' } = await request.json();
+    const body: PlanRequestPayload = await request.json();
+    const language = typeof body.language === 'string' ? body.language : 'es';
 
     await connectDB();
 
@@ -64,12 +68,10 @@ export async function POST(
     await event.save();
 
     return NextResponse.json(plan);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating plan:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

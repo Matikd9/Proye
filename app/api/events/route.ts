@@ -1,13 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 
-export async function GET(request: NextRequest) {
+type SpendingStyle = 'value' | 'balanced' | 'premium';
+
+interface EventPayload {
+  name?: string;
+  eventType?: string;
+  numberOfGuests?: number;
+  ageRange?: string;
+  genderDistribution?: string;
+  location?: string;
+  eventDate?: string;
+  budget?: number | string;
+  preferences?: string;
+  spendingStyle?: SpendingStyle | string;
+  currency?: string;
+}
+
+export async function GET() {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,24 +33,22 @@ export async function GET(request: NextRequest) {
     const events = await Event.find({ userId: session.user.id }).sort({ createdAt: -1 });
 
     return NextResponse.json(events);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching events:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await request.json();
+    const data: EventPayload = await request.json();
 
     const name = typeof data.name === 'string' ? data.name.trim() : '';
 
@@ -62,8 +75,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Event date is required' }, { status: 400 });
     }
 
-    const allowedSpendingStyles = ['value', 'balanced', 'premium'] as const;
-    type SpendingStyle = (typeof allowedSpendingStyles)[number];
+    const allowedSpendingStyles: SpendingStyle[] = ['value', 'balanced', 'premium'];
     const spendingStyle =
       typeof data.spendingStyle === 'string' && allowedSpendingStyles.includes(data.spendingStyle as SpendingStyle)
         ? (data.spendingStyle as SpendingStyle)
@@ -89,12 +101,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(event, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating event:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

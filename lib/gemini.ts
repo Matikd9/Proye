@@ -41,6 +41,37 @@ export interface EventPlan {
   recommendations: string[];
 }
 
+type RawRecommendation =
+  | string
+  | {
+      title?: string;
+      argument?: string;
+    }
+  | null
+  | undefined;
+
+interface RawBreakdownItem {
+  name?: string;
+  price?: number;
+  source?: string;
+  notes?: string;
+}
+
+type NormalizedItemSource = RawBreakdownItem | string | null | undefined;
+
+interface RawBreakdownCategory {
+  category?: string;
+  items?: NormalizedItemSource[];
+  estimatedCost?: number;
+}
+
+interface RawPlan {
+  suggestions?: unknown;
+  estimatedCost?: unknown;
+  breakdown?: unknown;
+  recommendations?: unknown;
+}
+
 function describeSeason(date: Date, language: string) {
   const month = date.getMonth();
   let season: 'summer' | 'autumn' | 'winter' | 'spring' = 'summer';
@@ -72,13 +103,13 @@ function describeSeason(date: Date, language: string) {
   return labels[language === 'es' ? 'es' : 'en'][season];
 }
 
-function normalizePlan(rawPlan: any): EventPlan {
-  const normalizeRecommendations = (recommendations: any): string[] => {
+function normalizePlan(rawPlan: RawPlan): EventPlan {
+  const normalizeRecommendations = (recommendations: unknown): string[] => {
     if (!Array.isArray(recommendations)) {
       return [];
     }
 
-    return recommendations.map((item: any, idx: number) => {
+    return recommendations.map((item: RawRecommendation, idx: number) => {
       if (typeof item === 'string') {
         return item;
       }
@@ -99,9 +130,9 @@ function normalizePlan(rawPlan: any): EventPlan {
     suggestions: Array.isArray(rawPlan?.suggestions) ? rawPlan.suggestions : [],
     estimatedCost: typeof rawPlan?.estimatedCost === 'number' ? rawPlan.estimatedCost : 0,
     breakdown: Array.isArray(rawPlan?.breakdown)
-      ? rawPlan.breakdown.map((category: any) => {
+      ? (rawPlan.breakdown as RawBreakdownCategory[]).map((category) => {
           const itemsArray = Array.isArray(category?.items) ? category.items : [];
-          const normalizedItems = itemsArray.map((item: any, idx: number) => {
+          const normalizedItems = itemsArray.map((item: NormalizedItemSource, idx: number) => {
             if (typeof item === 'string') {
               return {
                 name: item,
@@ -328,9 +359,9 @@ Respond strictly as JSON with this structure:
     }
     
     throw new Error('No JSON found in response');
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating event plan:', error);
-    throw error;
+    throw error instanceof Error ? error : new Error('Unknown error generating event plan');
   }
 }
 

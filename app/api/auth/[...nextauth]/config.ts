@@ -1,18 +1,15 @@
-import type { NextAuthOptions } from 'next-auth';
+import type { NextAuthOptions, Profile, Session, User as NextAuthUser } from 'next-auth';
+import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { verifyPassword } from '@/lib/auth';
 
+type ProviderType = 'credentials' | 'google';
+
 const sanitizeImage = (image?: string | null) => {
   if (!image) return undefined;
-  if (image.startsWith('data:')) {
-    return undefined;
-  }
-  if (image.length > 1024) {
-    return undefined;
-  }
   return image;
 };
 
@@ -36,7 +33,8 @@ const authConfig: NextAuthOptions = {
 
         await connectDB();
 
-        const user = await User.findOne({ email: credentials.email });
+        const email = credentials.email.trim().toLowerCase();
+        const user = await User.findOne({ email });
 
         if (!user || !user.password) {
           return null;
@@ -53,6 +51,7 @@ const authConfig: NextAuthOptions = {
           email: user.email,
           name: user.name,
           image: user.image,
+          provider: user.provider,
         };
       },
     }),
@@ -63,12 +62,15 @@ const authConfig: NextAuthOptions = {
         await connectDB();
 
         const existingUser = await User.findOne({ email: user.email });
+        const profileData = profile as (Profile & { picture?: string | null; name?: string | null }) | null;
+        const profileName = profileData?.name || 'User';
+        const profileImage = sanitizeImage(user.image || profileData?.picture);
 
         if (!existingUser) {
           const newUser = await User.create({
             email: user.email,
-            name: user.name || (profile as any)?.name || 'User',
-            image: user.image || (profile as any)?.picture,
+            name: user.name || profileName,
+            image: profileImage,
             provider: 'google',
             providerId: account.providerAccountId,
           });
@@ -87,28 +89,51 @@ const authConfig: NextAuthOptions = {
       return true;
     },
     async session({ session, token }) {
+      const typedToken = token as JWT & { provider?: ProviderType };
       if (session.user) {
-        (session.user as any).id = token.id as string;
-        if (typeof token.name === 'string') {
-          session.user.name = token.name;
+        if (typeof typedToken.id === 'string') {
+          session.user.id = typedToken.id;
         }
-        if (typeof token.email === 'string') {
-          session.user.email = token.email;
+        if (typeof typedToken.name === 'string') {
+          session.user.name = typedToken.name;
         }
-        if (typeof token.picture === 'string' || typeof token.picture === 'undefined') {
-          session.user.image = token.picture as string | undefined;
+        if (typeof typedToken.email === 'string') {
+          session.user.email = typedToken.email;
         }
+        session.user.image = typeof typedToken.picture === 'string' ? typedToken.picture : session.user.image;
+        session.user.provider = typedToken.provider;
       }
-      return session;
+      return session as Session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        (token as any).id = (user as any).id;
-        token.name = user.name;
-        token.email = user.email;
-        token.picture = sanitizeImage(user.image);
+    async jwt({ token, user, trigger, account }) {
+      const typedToken = token as JWT & { provider?: ProviderType };
+      const typedUser = user as (NextAuthUser & { provider?: ProviderType }) | undefined;
+
+      if (typedUser) {
+        typedToken.id = typedUser.id ?? typedToken.id;
+        typedToken.name = typedUser.name;
+        typedToken.email = typedUser.email;
+        typedToken.picture = sanitizeImage(typedUser.image);
+        typedToken.provider = typedUser.provider || (account?.provider === 'google' ? 'google' : 'credentials');
       }
-      return token;
+      
+      // When session is updated (e.g., after profile update), fetch latest data from database
+      if (trigger === 'update' && typedToken.id) {
+        try {
+          await connectDB();
+          const freshUser = await User.findById(typedToken.id).select('name image email provider');
+          if (freshUser) {
+            typedToken.name = freshUser.name;
+            typedToken.email = freshUser.email;
+            typedToken.picture = sanitizeImage(freshUser.image);
+            typedToken.provider = freshUser.provider;
+          }
+        } catch (error) {
+          console.error('Error fetching user in jwt callback:', error);
+        }
+      }
+      
+      return typedToken as JWT;
     },
   },
   pages: {

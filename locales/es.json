@@ -206,6 +206,32 @@
     "description": "Este proyecto está alineado con los ODS 8 y 12 de las Naciones Unidas",
     "ods8": "ODS 8: Trabajo decente y crecimiento económico",
     "ods12": "ODS 12: Producción y consumo responsables"
+  },
+  "profile": {
+    "editProfile": "Editar Perfil",
+    "backToProfile": "Volver al Perfil",
+    "accountInformation": "Información de la Cuenta",
+    "username": "Nombre de Usuario",
+    "memberSince": "Miembro desde",
+    "googleAccount": "Cuenta de Google",
+    "profilePicture": "Foto de Perfil",
+    "uploadImage": "Subir Imagen",
+    "removeImage": "Eliminar Imagen",
+    "emailCannotBeChanged": "El correo electrónico no se puede cambiar",
+    "changePassword": "Cambiar Contraseña",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "googleImageInfo": "Las imágenes de perfil de Google no se pueden modificar desde aquí",
+    "googlePasswordInfo": "Las contraseñas de cuentas de Google se gestionan a través de Google",
+    "profileUpdated": "Perfil actualizado correctamente",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "imageTooLarge": "La imagen es demasiado grande. Máximo 5MB",
+    "invalidImageType": "Tipo de imagen no válido",
+    "cannotDeleteGoogleImage": "No se puede eliminar la imagen de una cuenta de Google",
+    "required": "Requerido",
+    "optional": "Opcional"
   }
 }
 

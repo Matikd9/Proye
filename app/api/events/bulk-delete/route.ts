@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import authConfig from '../../auth/[...nextauth]/config';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 
+interface BulkDeletePayload {
+  ids?: string[];
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authConfig as NextAuthOptions);
+    const session = await getServerSession(authConfig);
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { ids } = await request.json();
+    const body: BulkDeletePayload = await request.json();
+    const ids = Array.isArray(body.ids)
+      ? body.ids.filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
+      : [];
 
     if (!Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json(
@@ -30,11 +36,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ deletedCount: result.deletedCount ?? 0 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting events:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

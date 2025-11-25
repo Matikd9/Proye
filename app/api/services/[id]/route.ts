@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Service from '@/models/Service';
 
+interface ServiceUpdatePayload {
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  [key: string]: unknown;
+}
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -16,12 +24,10 @@ export async function GET(
     }
 
     return NextResponse.json(service);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching service:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -30,7 +36,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const data = await request.json();
+    const data: ServiceUpdatePayload = await request.json();
 
     await connectDB();
 
@@ -45,17 +51,15 @@ export async function PUT(
     }
 
     return NextResponse.json(service);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating service:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -68,12 +72,10 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: 'Service deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting service:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

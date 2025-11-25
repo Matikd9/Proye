@@ -6,7 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageProvider';
 import { t } from '@/lib/i18n';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, LogOut, LogIn } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function Navbar() {
@@ -51,9 +51,9 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link href="/" className="flex items-center gap-3 px-2 py-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 py-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 px-2">
               <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 text-white font-black flex items-center justify-center shadow-md">
                 EP
               </div>
@@ -84,10 +84,10 @@ export default function Navbar() {
               })}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary-100 bg-gradient-to-r from-white to-primary-50 text-sm font-semibold text-gray-700 shadow-sm hover:shadow-md hover:border-primary-200 transition-all"
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary-100 bg-gradient-to-r from-white to-primary-50 text-sm font-semibold text-gray-700 shadow-sm hover:shadow-md hover:border-primary-200 transition-all"
               aria-label="Toggle language"
             >
               <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600">
@@ -96,8 +96,15 @@ export default function Navbar() {
               <span className="tracking-wide text-gray-800">{locale.toUpperCase()}</span>
               <span className="text-xs text-gray-400">/ {locale === 'es' ? 'EN' : 'ES'}</span>
             </button>
+            <button
+              onClick={toggleLanguage}
+              className="sm:hidden p-2 rounded-full border border-primary-100 text-primary-600 hover:bg-primary-50"
+              aria-label="Toggle language"
+            >
+              <Globe className="h-5 w-5" />
+            </button>
             {session ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Link
                   href="/profile"
                   aria-label={t('profile.view.openProfile', locale)}
@@ -122,18 +129,34 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={() => signOut()}
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
+                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
                 >
                   {t('common.logout', locale)}
                 </button>
+                <button
+                  onClick={() => signOut()}
+                  className="sm:hidden p-2 rounded-full border border-gray-200 text-primary-600 hover:bg-primary-50"
+                  aria-label={t('common.logout', locale)}
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
               </div>
             ) : (
-              <Link
-                href="/auth/signin"
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
-              >
-                {t('common.login', locale)}
-              </Link>
+              <>
+                <Link
+                  href="/auth/signin"
+                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
+                >
+                  {t('common.login', locale)}
+                </Link>
+                <Link
+                  href="/auth/signin"
+                  className="sm:hidden p-2 rounded-full border border-primary-200 text-primary-600 hover:bg-primary-50"
+                  aria-label={t('common.login', locale)}
+                >
+                  <LogIn className="h-5 w-5" />
+                </Link>
+              </>
             )}
             <button
               className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900"

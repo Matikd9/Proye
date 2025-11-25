@@ -78,130 +78,135 @@ function CreateEventForm() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('events.createEvent', locale)}</h1>
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.name', locale)}
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              placeholder={t('events.namePlaceholder', locale)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.location', locale)}
-            </label>
-            <input
-              type="text"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Ej: Santiago, Chile"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.eventDate', locale)}
-            </label>
-            <input
-              type="date"
-              value={formData.eventDate}
-              onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              required
-            />
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.name', locale)}
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                placeholder={t('events.namePlaceholder', locale)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.location', locale)}
+              </label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Ej: Santiago, Chile"
+                required
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.eventType', locale)}
-            </label>
-            <select
-              value={formData.eventType}
-              onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              required
-            >
-              <option value="birthday">{t('events.eventTypes.birthday', locale)}</option>
-              <option value="friends">{t('events.eventTypes.friends', locale)}</option>
-              <option value="corporate">{t('events.eventTypes.corporate', locale)}</option>
-              <option value="wedding">{t('events.eventTypes.wedding', locale)}</option>
-              <option value="other">{t('events.eventTypes.other', locale)}</option>
-            </select>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.eventDate', locale)}
+              </label>
+              <input
+                type="date"
+                value={formData.eventDate}
+                onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.eventType', locale)}
+              </label>
+              <select
+                value={formData.eventType}
+                onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+              >
+                <option value="birthday">{t('events.eventTypes.birthday', locale)}</option>
+                <option value="friends">{t('events.eventTypes.friends', locale)}</option>
+                <option value="corporate">{t('events.eventTypes.corporate', locale)}</option>
+                <option value="wedding">{t('events.eventTypes.wedding', locale)}</option>
+                <option value="other">{t('events.eventTypes.other', locale)}</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.numberOfGuests', locale)}
-            </label>
-            <input
-              type="number"
-              min="1"
-              value={formData.numberOfGuests}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  numberOfGuests: Number.parseInt(e.target.value, 10) || 1,
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              required
-            />
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.numberOfGuests', locale)}
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={formData.numberOfGuests}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    numberOfGuests: Number.parseInt(e.target.value, 10) || 1,
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.ageRange', locale)}
+              </label>
+              <select
+                value={formData.ageRange}
+                onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+              >
+                <option value="children">{t('events.ageRanges.children', locale)}</option>
+                <option value="teens">{t('events.ageRanges.teens', locale)}</option>
+                <option value="adults">{t('events.ageRanges.adults', locale)}</option>
+                <option value="seniors">{t('events.ageRanges.seniors', locale)}</option>
+                <option value="mixed">{t('events.ageRanges.mixed', locale)}</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.ageRange', locale)}
-            </label>
-            <select
-              value={formData.ageRange}
-              onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              required
-            >
-              <option value="children">{t('events.ageRanges.children', locale)}</option>
-              <option value="teens">{t('events.ageRanges.teens', locale)}</option>
-              <option value="adults">{t('events.ageRanges.adults', locale)}</option>
-              <option value="seniors">{t('events.ageRanges.seniors', locale)}</option>
-              <option value="mixed">{t('events.ageRanges.mixed', locale)}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.genderDistribution', locale)}
-            </label>
-            <select
-              value={formData.genderDistribution}
-              onChange={(e) => setFormData({ ...formData, genderDistribution: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              required
-            >
-              <option value="mixed">{t('events.genderOptions.mixed', locale)}</option>
-              <option value="mostlyMale">{t('events.genderOptions.mostlyMale', locale)}</option>
-              <option value="mostlyFemale">{t('events.genderOptions.mostlyFemale', locale)}</option>
-              <option value="balanced">{t('events.genderOptions.balanced', locale)}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('events.budget', locale)} (CLP)
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.budget}
-              onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Ej: 250000"
-            />
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.genderDistribution', locale)}
+              </label>
+              <select
+                value={formData.genderDistribution}
+                onChange={(e) => setFormData({ ...formData, genderDistribution: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+              >
+                <option value="mixed">{t('events.genderOptions.mixed', locale)}</option>
+                <option value="mostlyMale">{t('events.genderOptions.mostlyMale', locale)}</option>
+                <option value="mostlyFemale">{t('events.genderOptions.mostlyFemale', locale)}</option>
+                <option value="balanced">{t('events.genderOptions.balanced', locale)}</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('events.budget', locale)} (CLP)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={formData.budget}
+                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Ej: 250000"
+              />
+            </div>
           </div>
 
           <div>
@@ -233,7 +238,7 @@ function CreateEventForm() {
             />
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={() => router.back()}

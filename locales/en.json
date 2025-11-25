@@ -223,6 +223,48 @@
       "description": "Hold on while we fetch your saved events and latest budgets."
     }
   },
+  "profile": {
+    "view": {
+      "badge": "Your profile",
+      "editButton": "Edit profile",
+      "backHome": "Back to home",
+      "openProfile": "View profile",
+      "providerLabel": "Authentication provider",
+      "providerGoogle": "Google",
+      "providerCredentials": "Email & password",
+      "providerDescGoogle": "You signed in with Google. Manage your photo and password from your Google Account.",
+      "providerDescCredentials": "Accounts created here let you update your photo and password from this page.",
+      "memberSince": "Member since",
+      "lastUpdate": "Last update: {{date}}"
+    },
+    "edit": {
+      "badge": "Edit profile",
+      "title": "Customize your account",
+      "subtitle": "Update your basic info, avatar, and password.",
+      "basicInfoTitle": "Basic information",
+      "basicInfoSubtitle": "Keep your display name up to date and review your email.",
+      "nameLabel": "Full name",
+      "emailLabel": "Email",
+      "photoTitle": "Profile photo",
+      "photoHintCredentials": "Upload a light square image to personalize your profile.",
+      "photoHintGoogle": "Google accounts pull the avatar directly from your Google profile.",
+      "photoUpload": "Upload image",
+      "photoRemove": "Remove image",
+      "passwordTitle": "Password update",
+      "passwordSubtitle": "Enter your current password and define a new one if you want to update it.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving…"
+    },
+    "messages": {
+      "imageTooLarge": "Image must be smaller than 2MB.",
+      "updateSuccess": "Profile updated successfully.",
+      "unknownError": "Unknown error"
+    }
+  },
   "ods": {
     "title": "Sustainable Development Goals",
     "description": "This project is aligned with UN SDGs 8 and 12",

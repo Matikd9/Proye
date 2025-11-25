@@ -98,7 +98,11 @@ export default function Navbar() {
             </button>
             {session ? (
               <div className="flex items-center space-x-4">
-                <div className="hidden sm:flex items-center gap-3 px-3 py-1 rounded-full border border-gray-200 bg-white shadow-sm">
+                <Link
+                  href="/profile"
+                  aria-label={t('profile.view.openProfile', locale)}
+                  className="hidden sm:flex items-center gap-3 px-3 py-1 rounded-full border border-gray-200 bg-white shadow-sm transition hover:border-primary-200 hover:bg-primary-50"
+                >
                   {session.user?.image ? (
                     <Image
                       src={session.user.image}
@@ -115,7 +119,7 @@ export default function Navbar() {
                   <span className="text-sm font-semibold text-gray-800 tracking-tight">
                     {displayName}
                   </span>
-                </div>
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
@@ -143,6 +147,28 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-4 pt-3 pb-6 space-y-2 bg-white border-t border-gray-100">
+            {session && (
+              <Link
+                href="/profile"
+                className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base font-semibold text-gray-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {session.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user?.name || 'Avatar'}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover border border-gray-200"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-base font-bold border border-primary-200">
+                    {initials}
+                  </div>
+                )}
+                {t('profile.view.openProfile', locale)}
+              </Link>
+            )}
             {navLinks.map((link) => {
               const isActive =
                 pathname === link.href ||
